@@ -1,0 +1,86 @@
+/* frontend/src/index.css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+}
+
+body {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+a {
+  color: #bb86fc; /* Bright purple link color */
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  background-color: #bb86fc;
+  color: #121212;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #9853c6; /* Slightly darker purple */
+}
+
+nav {
+  background-color: #1f1f1f;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+}
+
+nav ul li {
+  margin: 0 15px;
+}
+
+nav ul li a {
+  font-size: 18px;
+}
+
+nav .auth-buttons {
+  display: flex;
+  align-items: center;
+}
+
+nav .auth-buttons .avatar-wrapper {
+  display: flex;
+  align-items: center;
+  margin-right: 20px; /* Space between avatar and username */
+}
+
+nav .auth-buttons .avatar-wrapper img {
+  width: 40px;   /* Adjusted size */
+  height: 40px;  /* Adjusted size */
+  border-radius: 50%; /* Makes the image circular */
+  padding: 2px;  /* Space inside the border */
+  border: 2px solid #ffffff; /* White border */
+}
+
+.container {
+  padding: 20px;
+  max-width: 1220px;
+  margin: 0 auto;
+}
