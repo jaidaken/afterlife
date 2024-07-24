@@ -12,7 +12,7 @@ interface Character {
   zombieKills: number;
   survivorKills: number;
   hoursSurvived: number;
-  userId?: string; // Add userId field
+  userId?: string;
 }
 
 const getAvatarUrl = (charName: string): string => {

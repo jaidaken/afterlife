@@ -41,7 +41,7 @@ passport.use(new DiscordStrategy(
           discordId: id,
           username: `${username}#${discriminator}`,
           avatar,
-          isAdmin: false, // Default isAdmin to false, change if there's different logic
+          isAdmin: false,
         });
         await user.save();
       }
@@ -78,7 +78,6 @@ router.get('/logout', (req, res) => {
   });
 });
 
-// check if user is authenticated
 const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
   if (req.isAuthenticated()) {
     return next();
@@ -86,7 +85,6 @@ const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
   res.status(401).json({ message: 'Unauthorized' });
 };
 
-// get user information
 router.get('/me', isAuthenticated, (req, res) => {
   res.json(req.user);
 });

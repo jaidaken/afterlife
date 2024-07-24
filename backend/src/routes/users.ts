@@ -3,7 +3,6 @@ import User from '../models/User';
 
 const router = express.Router();
 
-// Endpoint to get all users
 router.get('/users', async (req, res) => {
   try {
     const users = await User.find();
@@ -14,7 +13,6 @@ router.get('/users', async (req, res) => {
   }
 });
 
-// Endpoint to get a user by discordId
 router.get('/users/:discordId', async (req, res) => {
   try {
     const user = await User.findOne({ discordId: req.params.discordId });

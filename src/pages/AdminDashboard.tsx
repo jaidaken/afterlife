@@ -35,12 +35,10 @@ const AdminDashboard: React.FC = () => {
     };
 
     useEffect(() => {
-        // Fetch all characters
         axios.get('/api/characters').then((response) => {
             setCharacters(response.data);
         });
 
-        // Fetch all users
         axios.get('/api/users')
             .then((response) => {
                 console.log('Fetched users:', response.data);
@@ -58,7 +56,7 @@ const AdminDashboard: React.FC = () => {
                 discordId: selectedUser,
             });
             alert('Character assigned successfully');
-            setIsModalOpen(false); // Close the modal on success
+            setIsModalOpen(false);
         } catch (error) {
             console.error('Error assigning character', error);
             alert('Failed to assign character');

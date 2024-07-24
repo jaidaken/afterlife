@@ -5,7 +5,7 @@ import UserDashboard from './pages/UserDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import CharactersList from './pages/CharactersList';
 import CharacterDetail from './pages/CharacterDetail';
-import EditCharacter from './pages/EditCharacter'; // Import EditCharacter
+import EditCharacter from './pages/EditCharacter';
 import { AuthProvider } from './context/AuthContext';
 import NavBar from './components/NavBar';
 

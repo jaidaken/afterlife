@@ -14,7 +14,6 @@ import { importCharacters } from './utils/importCharacters';
 
 dotenv.config();
 
-// Ensure the environment variables are set properly
 const { MONGO_URI, SESSION_SECRET, PORT } = process.env;
 if (!MONGO_URI || !SESSION_SECRET || !PORT) {
   throw new Error('Missing required environment variables');
@@ -22,13 +21,10 @@ if (!MONGO_URI || !SESSION_SECRET || !PORT) {
 
 const app = express();
 
-// CORS configuration
 app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 
-// Body parser configuration
 app.use(bodyParser.json());
 
-// Session configuration
 app.use(session({
   secret: SESSION_SECRET,
   resave: false,
@@ -39,11 +35,9 @@ app.use(session({
   }),
 }));
 
-// Initialize Passport
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Set up routes
 app.use('/auth', authRouter);
 app.use('/api', characterRouter);
 app.use('/api', usersRouter);
@@ -58,13 +52,9 @@ app.post('/api/import-characters', async (req, res) => {
   }
 });
 
-// Run importCharacters at server startup
 importCharacters();
-
-// Schedule importCharacters to run every hour
 cron.schedule('*/10 * * * *', importCharacters);
 
-// Connect to MongoDB
 mongoose.connect(MONGO_URI)
   .then(() => {
     console.log('Database connected successfully');

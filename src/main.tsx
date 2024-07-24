@@ -1,7 +1,6 @@
-// src/index.tsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css'; // Ensure this line is present
+import './index.css';
 import App from './App';
 
 const rootElement = document.getElementById('root') as HTMLElement;

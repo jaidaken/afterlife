@@ -25,7 +25,6 @@ const UserDashboard: React.FC = () => {
 
 	useEffect(() => {
 		if (user) {
-			// Fetch the user's character names
 			const url = `/api/users/${user.discordId}`;
 			console.log(`Fetching user data from: ${url}`);
 			axios.get(url)
@@ -46,7 +45,6 @@ const UserDashboard: React.FC = () => {
 
 	useEffect(() => {
 		if (userCharacterNames.length > 0) {
-			// Fetch all characters and filter based on userCharacterNames
 			axios.get('/api/characters')
 				.then((response) => {
 					console.log('All characters:', response.data);

@@ -32,7 +32,7 @@ const EditCharacter: React.FC = () => {
       try {
         const response = await axios.get(`/api/characters/${id}`);
         if (response.data.userId !== user?.discordId) {
-          navigate('/'); // Redirect if the user does not own the character
+          navigate('/');
         } else {
           setCharacter(response.data);
         }

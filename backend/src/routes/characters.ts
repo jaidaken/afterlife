@@ -5,7 +5,6 @@ import User from '../models/User';
 
 const router = express.Router();
 
-// Endpoint to read characters from CSV and save to the database
 router.post('/characters/import', async (req, res) => {
   try {
     const characters = await getAllCharacters();
@@ -29,7 +28,6 @@ router.post('/characters/import', async (req, res) => {
   }
 });
 
-// Endpoint to get all characters from the database
 router.get('/characters', async (req, res) => {
   try {
     const characters = await Character.find();
@@ -40,7 +38,6 @@ router.get('/characters', async (req, res) => {
   }
 });
 
-// Fetch characters for a specific user
 router.get('/characters/user/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
@@ -53,7 +50,6 @@ router.get('/characters/user/:userId', async (req, res) => {
 });
 
 
-// Endpoint to get a character by name from the database
 router.get('/characters/:name', async (req, res) => {
   const { name } = req.params;
   try {
@@ -68,7 +64,6 @@ router.get('/characters/:name', async (req, res) => {
   }
 });
 
-// Endpoint to assign a character to a user
 router.post('/characters/:charName/assign', async (req, res) => {
   const { charName } = req.params;
   const { discordId } = req.body;
@@ -98,7 +93,6 @@ router.post('/characters/:charName/assign', async (req, res) => {
   }
 });
 
-// Endpoint to add a new character to the database
 router.post('/characters', async (req, res) => {
   const { username, steamID, charName, profession, isAlive, zombieKills, survivorKills, hoursSurvived } = req.body;
 
