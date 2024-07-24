@@ -7,7 +7,7 @@ export interface IUser extends Document {
   username: string;
   avatar: string;
   isAdmin: boolean;
-  characters: string[]; // Change this line to hold an array of strings
+  characters: string[];
 }
 
 const UserSchema = new Schema<IUser>({
@@ -15,9 +15,9 @@ const UserSchema = new Schema<IUser>({
   username: { type: String, required: true },
   avatar: { type: String },
   isAdmin: { type: Boolean, default: false },
-  characters: [{ type: String }] // Change this line to hold an array of strings
+  characters: [{ type: String }]
 });
 
-const User: Model<IUser> = mongoose.model('User', UserSchema);
+const User: Model<IUser> = mongoose.model<IUser>('User', UserSchema);
 
 export default User;

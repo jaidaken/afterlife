@@ -34,7 +34,7 @@ const NavBar: React.FC = () => {
             <>
               <div className="avatar-wrapper">
                 <img
-                  src={getDiscordAvatarUrl(user.discordId, user.avatar, user.discriminator)}
+                  src={getDiscordAvatarUrl(user.discordId, user.avatar)}
                   alt={`${user.username}'s avatar`}
                   className="rounded-full border-2 border-white w-10 h-10"
                 />

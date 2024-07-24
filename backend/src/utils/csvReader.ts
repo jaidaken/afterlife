@@ -18,7 +18,7 @@ interface Character {
 
 const parseCSVFile = (filePath: string): Promise<Character> => {
   return new Promise<Character>((resolve, reject) => {
-    const results: any[] = [];
+    const results: Character[] = [];
 
     fs.createReadStream(filePath)
       .pipe(csv({ separator: ';' }))
@@ -31,10 +31,10 @@ const parseCSVFile = (filePath: string): Promise<Character> => {
             steamID: character.steamID,
             charName: character.charName,
             profession: character.profession,
-            isAlive: character.isAlive === 'true',
-            zombieKills: isNaN(parseInt(character.zombieKills, 10)) ? 0 : parseInt(character.zombieKills, 10),
-            survivorKills: isNaN(parseInt(character.survivorKills, 10)) ? 0 : parseInt(character.survivorKills, 10),
-            hoursSurvived: isNaN(parseFloat(character.hoursSurvived)) ? 0 : parseFloat(character.hoursSurvived),
+            isAlive: String(character.isAlive).toLowerCase() === 'true',
+            zombieKills: isNaN(Number(character.zombieKills)) ? 0 : Number(character.zombieKills),
+            survivorKills: isNaN(Number(character.survivorKills)) ? 0 : Number(character.survivorKills),
+            hoursSurvived: isNaN(Number(character.hoursSurvived)) ? 0 : Number(character.hoursSurvived),
           });
         } else {
           reject(new Error('No data in CSV file'));

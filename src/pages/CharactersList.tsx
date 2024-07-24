@@ -45,28 +45,33 @@ const CharactersList: React.FC = () => {
   }
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl mb-4 text-white">Characters</h1>
-      {characters.length === 0 ? (
-        <p>No characters found.</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {characters.map((character, index) => (
-            <div key={index} className="bg-gray-700 hover:bg-gray-600 p-4 rounded-lg text-center transition">
-              <Link to={`/character/${character.charName}`}>
-                <div className="flex flex-col items-center">
-                  <img
-                    src={getAvatarUrl(character.charName)}
-                    alt={`${character.charName}'s avatar`}
-                    className="w-32 h-32 rounded-full mb-2 object-cover"
-                  />
-                  <h2 className="text-xl text-white">{character.charName}</h2>
-                </div>
-              </Link>
-            </div>
-          ))}
-        </div>
-      )}
+    <div className="flex justify-center min-h-screen">
+      <div className="p-4">
+        <h1 className="text-2xl mb-4 text-white flex justify-center">Characters</h1>
+        {characters.length === 0 ? (
+          <p>No characters found.</p>
+        ) : (
+          <div className="flex flex-wrap gap-4 justify-center flex-grow flex-shrink">
+            {characters.map((character, index) => (
+              <div
+                key={index}
+                className="bg-gray-700 hover:bg-gray-600 p-4 rounded-lg text-center transition"
+              >
+                <Link to={`/character/${character.charName}`}>
+                  <div className="flex flex-col items-center">
+                    <img
+                      src={getAvatarUrl(character.charName)}
+                      alt={`${character.charName}'s avatar`}
+                      className="w-48 h-48 rounded-lg mb-2 object-cover"
+                    />
+                    <h2 className="text-xl text-white">{character.charName}</h2>
+                  </div>
+                </Link>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

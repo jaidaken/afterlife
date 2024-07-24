@@ -6,8 +6,7 @@ import User from '../models/User';
 
 dotenv.config();
 
-// ****** Passport Configuration ******
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 passport.serializeUser((user: any, done) => {
   done(null, user.id);
 });
@@ -54,8 +53,6 @@ passport.use(new DiscordStrategy(
   }
 ));
 
-// ****** Router Configuration ******
-
 const router = Router();
 
 router.get('/discord', passport.authenticate('discord'));
@@ -81,7 +78,7 @@ router.get('/logout', (req, res) => {
   });
 });
 
-// Middleware to check if user is authenticated
+// check if user is authenticated
 const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
   if (req.isAuthenticated()) {
     return next();
@@ -89,7 +86,7 @@ const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
   res.status(401).json({ message: 'Unauthorized' });
 };
 
-// Endpoint to get user information
+// get user information
 router.get('/me', isAuthenticated, (req, res) => {
   res.json(req.user);
 });

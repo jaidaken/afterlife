@@ -9,9 +9,8 @@ import MongoStore from 'connect-mongo';
 import cron from 'node-cron';
 import { authRouter } from './routes/auth';
 import characterRouter from './routes/characters';
-import { getAllCharacters } from './utils/csvReader';
-import Character, { ICharacter } from './models/Character';
 import usersRouter from './routes/users';
+import { importCharacters } from './utils/importCharacters';
 
 dotenv.config();
 
@@ -49,31 +48,21 @@ app.use('/auth', authRouter);
 app.use('/api', characterRouter);
 app.use('/api', usersRouter);
 
-const importCharacters = async () => {
+app.post('/api/import-characters', async (req, res) => {
   try {
-    const characters: ICharacter[] = (await getAllCharacters()).map(character => character as unknown as ICharacter);
-
-    await Promise.all(
-      characters.map(async (character) => {
-        await Character.findOneAndUpdate(
-          { charName: character.charName }, // Match by charName
-          { ...character }, // Update the character data
-          { new: true, upsert: true } // Create a new document if no match is found
-        );
-      })
-    );
-
-    console.log('Characters imported successfully');
+    await importCharacters();
+    res.status(200).send('Characters imported successfully');
   } catch (error) {
     console.error('Error importing characters:', error);
+    res.status(500).send('Failed to import characters');
   }
-};
+});
 
 // Run importCharacters at server startup
 importCharacters();
 
 // Schedule importCharacters to run every hour
-cron.schedule('0 * * * *', importCharacters);
+cron.schedule('*/10 * * * *', importCharacters);
 
 // Connect to MongoDB
 mongoose.connect(MONGO_URI)
