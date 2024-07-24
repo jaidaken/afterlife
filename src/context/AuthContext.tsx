@@ -1,4 +1,3 @@
-// frontend/src/context/AuthContext.tsx
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { fetchUser, login, logout } from '../utils/authUtils';
 

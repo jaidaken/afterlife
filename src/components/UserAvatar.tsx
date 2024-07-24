@@ -1,4 +1,3 @@
-// src/components/UserAvatar.tsx
 import React from 'react';
 import getDiscordAvatarUrl from '../utils/getDiscordAvatarUrl';
 

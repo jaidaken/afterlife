@@ -7,8 +7,15 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import MongoStore from 'connect-mongo';
 import { authRouter } from './routes/auth';
+import { characterRouter } from './routes/characters';
 
 dotenv.config();
+
+// Ensure the environment variables are set properly
+const { MONGO_URI, SESSION_SECRET, PORT } = process.env;
+if (!MONGO_URI || !SESSION_SECRET || !PORT) {
+  throw new Error('Missing required environment variables');
+}
 
 const app = express();
 
@@ -20,11 +27,11 @@ app.use(bodyParser.json());
 
 // Session configuration
 app.use(session({
-  secret: process.env.SESSION_SECRET!,
+  secret: SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI!,
+    mongoUrl: MONGO_URI,
     collectionName: 'sessions',
   }),
 }));
@@ -35,13 +42,14 @@ app.use(passport.session());
 
 // Set up routes
 app.use('/auth', authRouter);
+app.use('/api', characterRouter); // Add character routes
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI!)
+mongoose.connect(MONGO_URI)
   .then(() => {
     console.log('Database connected successfully');
-    app.listen(process.env.PORT, () => {
-      console.log(`Server running on port ${process.env.PORT}`);
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
     });
   })
   .catch(error => {

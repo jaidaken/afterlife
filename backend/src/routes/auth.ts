@@ -1,5 +1,3 @@
-// backend/src/routes/auth.ts
-
 import { Router, Request, Response, NextFunction } from 'express';
 import passport from 'passport';
 import { Strategy as DiscordStrategy } from 'passport-discord';
@@ -8,7 +6,8 @@ import User from '../models/User';
 
 dotenv.config();
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// ****** Passport Configuration ******
+
 passport.serializeUser((user: any, done) => {
   done(null, user.id);
 });
@@ -34,19 +33,16 @@ passport.use(new DiscordStrategy(
     try {
       let user = await User.findOne({ discordId: id });
 
-      // If user exists, do not change isAdmin or other data unless necessary
       if (user) {
-        // Optionally, update other fields if needed (but not isAdmin)
         user.username = `${username}#${discriminator}`;
         user.avatar = avatar ?? '';
         await user.save();
       } else {
-        // Create new user
         user = new User({
           discordId: id,
           username: `${username}#${discriminator}`,
           avatar,
-          isAdmin: false, // Default value or logic to set isAdmin for new users
+          isAdmin: false, // Default isAdmin to false, change if there's different logic
         });
         await user.save();
       }
@@ -57,6 +53,8 @@ passport.use(new DiscordStrategy(
     }
   }
 ));
+
+// ****** Router Configuration ******
 
 const router = Router();
 
