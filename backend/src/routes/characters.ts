@@ -35,9 +35,23 @@ router.get('/characters', async (req, res) => {
     const characters = await Character.find();
     res.json(characters);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching characters', error });
+    console.error('Error fetching characters:', error);
+    res.status(500).send('Server error');
   }
 });
+
+// Fetch characters for a specific user
+router.get('/characters/user/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const characters = await Character.find({ userId });
+    res.json(characters);
+  } catch (error) {
+    console.error('Error fetching user characters:', error);
+    res.status(500).send('Server error');
+  }
+});
+
 
 // Endpoint to get a character by name from the database
 router.get('/characters/:name', async (req, res) => {

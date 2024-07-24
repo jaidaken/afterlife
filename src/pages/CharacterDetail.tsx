@@ -39,7 +39,7 @@ const CharacterDetail: React.FC = () => {
   }, [name]);
 
   const handleEdit = () => {
-    navigate(`/character/edit/${character?.id}`);
+    navigate(`/character/edit/${character?.charName}`);
   };
 
   if (!character) {

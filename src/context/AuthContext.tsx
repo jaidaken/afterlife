@@ -1,16 +1,16 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { fetchUser, login, logout } from '../utils/authUtils';
 
-interface UserType {
-  discordId: string;
-  username: string;
-  avatar: string;
-  discriminator: string;
-  isAdmin: boolean;
+export interface User {
+	discordId: string;
+	username: string;
+	avatar: string;
+	isAdmin: boolean;
+	characters: string[];
 }
 
 interface AuthContextType {
-  user: UserType | null;
+  user: User | null;
   login: () => void;
   logout: () => void;
 }
@@ -18,7 +18,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<UserType | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     fetchUser(setUser);

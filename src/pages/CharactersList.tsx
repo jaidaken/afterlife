@@ -3,15 +3,14 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 interface Character {
-  username: string;
-  steamID: string;
+  id: string;
   charName: string;
   profession: string;
   isAlive: boolean;
   zombieKills: number;
   survivorKills: number;
   hoursSurvived: number;
-  userId?: string; // Add userId field
+  userId?: string;
 }
 
 const getAvatarUrl = (charName: string): string => {

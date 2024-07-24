@@ -4,49 +4,91 @@ import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 
 interface Character {
-  username: string;
-  steamID: string;
+  id: string;
   charName: string;
   profession: string;
   isAlive: boolean;
   zombieKills: number;
   survivorKills: number;
   hoursSurvived: number;
-  userId?: string; // Add userId field
 }
+
+const getAvatarUrl = (charName: string): string => {
+  return `/avatars/${charName}.webp`;
+};
 
 const UserDashboard: React.FC = () => {
   const { user } = useAuth();
   const [characters, setCharacters] = useState<Character[]>([]);
+  const [userCharacterNames, setUserCharacterNames] = useState<string[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
-      axios.get(`/api/characters?userId=${user.discordId}`).then((response) => {
-        setCharacters(response.data);
-      });
+      // Fetch the user's character names
+      const url = `/api/users/${user.discordId}`;
+      console.log(`Fetching user data from: ${url}`);
+      axios.get(url)
+        .then((response) => {
+          console.log('User data:', response.data);
+          setUserCharacterNames(response.data.characters);
+        })
+        .catch((error) => {
+          console.error('Error fetching user data:', error);
+          if (error.response && error.response.status === 404) {
+            setError('User not found.');
+          } else {
+            setError('An error occurred while fetching user data.');
+          }
+        });
     }
   }, [user]);
+
+  useEffect(() => {
+    if (userCharacterNames.length > 0) {
+      // Fetch all characters and filter based on userCharacterNames
+      axios.get('/api/characters')
+        .then((response) => {
+          console.log('All characters:', response.data);
+          const filteredCharacters = response.data.filter((character: Character) =>
+            userCharacterNames.includes(character.charName)
+          );
+          setCharacters(filteredCharacters);
+        })
+        .catch((error) => {
+          console.error('Error fetching characters:', error);
+          setError('An error occurred while fetching characters.');
+        });
+    }
+  }, [userCharacterNames]);
 
   if (!user) {
     return <h1 className="text-gray-300">Please log in to view your dashboard.</h1>;
   }
 
   return (
-    <div className="text-gray-300">
-      <h1 className="text-3xl font-bold">User Dashboard</h1>
+    <div className="text-gray-300 p-4">
+      <h1 className="text-3xl font-bold mb-4">User Dashboard</h1>
       <p>This is the user dashboard, visible only to logged-in users.</p>
+      {error && <p className="text-red-500">{error}</p>}
       <div>
         <h2 className="text-2xl mt-4 mb-2">Your Characters</h2>
         {characters.length > 0 ? (
-          <ul>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {characters.map((character) => (
-              <li key={character.id} className="mb-2">
-                <Link to={`/character/edit/${character.id}`} className="text-blue-500">
-                  {character.charName} - {character.profession}
-                </Link>
-              </li>
+              <Link key={character.id} to={`/character/${character.charName}`} className="bg-gray-700 hover:bg-gray-600 p-4 rounded-lg text-center transition">
+                <div className="flex flex-col items-center">
+                  <img
+                    src={getAvatarUrl(character.charName)}
+                    alt={`${character.charName}'s avatar`}
+                    className="w-32 h-32 rounded-full mb-2 object-cover"
+                  />
+                  <h2 className="text-xl text-white">{character.charName}</h2>
+                  <p className="text-sm text-gray-400">{character.profession}</p>
+                </div>
+              </Link>
             ))}
-          </ul>
+          </div>
         ) : (
           <p>You have no characters.</p>
         )}

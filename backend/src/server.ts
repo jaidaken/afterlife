@@ -11,7 +11,7 @@ import { authRouter } from './routes/auth';
 import characterRouter from './routes/characters';
 import { getAllCharacters } from './utils/csvReader';
 import Character, { ICharacter } from './models/Character';
-import { ObjectId } from 'mongodb';
+import usersRouter from './routes/users';
 
 dotenv.config();
 
@@ -46,7 +46,8 @@ app.use(passport.session());
 
 // Set up routes
 app.use('/auth', authRouter);
-app.use('/api', characterRouter); // Add character routes
+app.use('/api', characterRouter);
+app.use('/api', usersRouter);
 
 const importCharacters = async () => {
   try {
