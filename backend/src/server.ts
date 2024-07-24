@@ -6,8 +6,12 @@ import passport from 'passport';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import MongoStore from 'connect-mongo';
+import cron from 'node-cron';
 import { authRouter } from './routes/auth';
-import { characterRouter } from './routes/characters';
+import characterRouter from './routes/characters';
+import { getAllCharacters } from './utils/csvReader';
+import Character, { ICharacter } from './models/Character';
+import { ObjectId } from 'mongodb';
 
 dotenv.config();
 
@@ -43,6 +47,32 @@ app.use(passport.session());
 // Set up routes
 app.use('/auth', authRouter);
 app.use('/api', characterRouter); // Add character routes
+
+const importCharacters = async () => {
+  try {
+    const characters: ICharacter[] = (await getAllCharacters()).map(character => character as unknown as ICharacter);
+
+    await Promise.all(
+      characters.map(async (character) => {
+        await Character.findOneAndUpdate(
+          { charName: character.charName }, // Match by charName
+          { ...character }, // Update the character data
+          { new: true, upsert: true } // Create a new document if no match is found
+        );
+      })
+    );
+
+    console.log('Characters imported successfully');
+  } catch (error) {
+    console.error('Error importing characters:', error);
+  }
+};
+
+// Run importCharacters at server startup
+importCharacters();
+
+// Schedule importCharacters to run every hour
+cron.schedule('0 * * * *', importCharacters);
 
 // Connect to MongoDB
 mongoose.connect(MONGO_URI)

@@ -4,15 +4,14 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 
 interface Character {
-  id: string;
-  username?: string;
-  steamID?: string;
+  username: string;
+  steamID: string;
   charName: string;
-  profession?: string;
-  isAlive?: boolean;
-  zombieKills?: number;
-  survivorKills?: number;
-  hoursSurvived?: number;
+  profession: string;
+  isAlive: boolean;
+  zombieKills: number;
+  survivorKills: number;
+  hoursSurvived: number;
   userId?: string; // Add userId field
 }
 

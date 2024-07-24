@@ -4,9 +4,15 @@ import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 
 interface Character {
-  id: string;
+  username: string;
+  steamID: string;
   charName: string;
   profession: string;
+  isAlive: boolean;
+  zombieKills: number;
+  survivorKills: number;
+  hoursSurvived: number;
+  userId?: string; // Add userId field
 }
 
 const UserDashboard: React.FC = () => {

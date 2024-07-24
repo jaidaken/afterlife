@@ -11,6 +11,7 @@ interface Character {
   zombieKills: number;
   survivorKills: number;
   hoursSurvived: number;
+  userId?: string; // Add userId field
 }
 
 const getAvatarUrl = (charName: string): string => {

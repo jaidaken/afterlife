@@ -1,3 +1,4 @@
+// backend/src/utils/csvReader.ts
 import fs from 'fs';
 import path from 'path';
 import csv from 'csv-parser';
@@ -14,24 +15,6 @@ interface Character {
   survivorKills: number;
   hoursSurvived: number;
 }
-
-export const getAllCharacters = async (): Promise<Character[]> => {
-  const files = fs.readdirSync(PLAYER_DATA_PATH).filter(file => file.endsWith('_data.csv'));
-  const characters: Character[] = [];
-
-  for (const file of files) {
-    const filePath = path.join(PLAYER_DATA_PATH, file);
-
-    try {
-      const data = await parseCSVFile(filePath);
-      characters.push(data);
-    } catch (error) {
-      console.error(`Error reading file ${filePath}:`, error);
-    }
-  }
-
-  return characters;
-};
 
 const parseCSVFile = (filePath: string): Promise<Character> => {
   return new Promise<Character>((resolve, reject) => {
@@ -61,6 +44,24 @@ const parseCSVFile = (filePath: string): Promise<Character> => {
         reject(error);
       });
   });
+};
+
+export const getAllCharacters = async (): Promise<Character[]> => {
+  const files = fs.readdirSync(PLAYER_DATA_PATH).filter(file => file.endsWith('_data.csv'));
+  const characters: Character[] = [];
+
+  for (const file of files) {
+    const filePath = path.join(PLAYER_DATA_PATH, file);
+
+    try {
+      const data = await parseCSVFile(filePath);
+      characters.push(data);
+    } catch (error) {
+      console.error(`Error reading file ${filePath}:`, error);
+    }
+  }
+
+  return characters;
 };
 
 export const getCharacterByName = async (charName: string): Promise<Character | undefined> => {
