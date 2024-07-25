@@ -52,16 +52,29 @@ app.post('/api/import-characters', async (req, res) => {
   }
 });
 
-importCharacters();
-cron.schedule('*/10 * * * *', importCharacters);
+importCharacters().catch(error => {
+  console.error('Error during initial character import:', error);
+});
+
+cron.schedule('*/10 * * * *', () => {
+  importCharacters().catch(error => {
+    console.error('Error during scheduled character import:', error);
+  });
+});
 
 mongoose.connect(MONGO_URI)
   .then(() => {
     console.log('Database connected successfully');
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+    const port = parseInt(PORT, 10);
+    if (isNaN(port)) {
+      console.error(`Invalid port number: ${PORT}`);
+      process.exit(1);
+    }
+    app.listen(port, () => {
+      console.log(`Server running on port ${port}`);
     });
   })
   .catch(error => {
-    console.error('Database connection error:', error);
+    console.error('Database connection error:', error.message);
+    console.error(error.stack);
   });
