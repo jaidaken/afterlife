@@ -60,8 +60,8 @@ router.get('/discord', passport.authenticate('discord'));
 router.get(
   '/discord/callback',
   passport.authenticate('discord', {
-    failureRedirect: 'http://localhost:5173/auth/failed',
-    successRedirect: 'http://localhost:5173/dashboard',
+    failureRedirect: process.env.FAIL_REDIRECT_URL,
+    successRedirect: process.env.SUCCESS_REDIRECT_URL,
   })
 );
 
