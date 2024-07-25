@@ -41,7 +41,7 @@ const AdminDashboard: React.FC = () => {
 
         axios.get('/api/users')
             .then((response) => {
-                console.log('Fetched users:', response.data);
+                // console.log('Fetched users:', response.data);
                 setUsers(response.data);
             })
             .catch((error) => {

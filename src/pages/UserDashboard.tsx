@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 
 interface Character {
-	id: string;
+	_id: string;
 	charName: string;
 	profession: string;
 	isAlive: boolean;
@@ -26,10 +26,10 @@ const UserDashboard: React.FC = () => {
 	useEffect(() => {
 		if (user) {
 			const url = `/api/users/${user.discordId}`;
-			console.log(`Fetching user data from: ${url}`);
+			// console.log(`Fetching user data from: ${url}`);
 			axios.get(url)
 				.then((response) => {
-					console.log('User data:', response.data);
+					// console.log('User data:', response.data);
 					setUserCharacterNames(response.data.characters);
 				})
 				.catch((error) => {
@@ -47,7 +47,7 @@ const UserDashboard: React.FC = () => {
 		if (userCharacterNames.length > 0) {
 			axios.get('/api/characters')
 				.then((response) => {
-					console.log('All characters:', response.data);
+					// console.log('All characters:', response.data);
 					const filteredCharacters = response.data.filter((character: Character) =>
 						userCharacterNames.includes(character.charName)
 					);
@@ -75,7 +75,7 @@ const UserDashboard: React.FC = () => {
 					{characters.length > 0 ? (
 						<div className="flex flex-wrap gap-4 justify-center flex-grow flex-shrink">
 							{characters.map((character) => (
-								<Link key={character.id} to={`/character/${character.charName}`} className="bg-gray-700 hover:bg-gray-600 p-4 rounded-lg text-center transition">
+								<Link key={character._id} to={`/character/${character.charName}`} className="bg-gray-700 hover:bg-gray-600 p-4 rounded-lg text-center transition">
 									<div className="flex flex-col items-center">
 										<img
 											src={getAvatarUrl(character.charName)}
