@@ -1,12 +1,21 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vite';
 import reactRefresh from '@vitejs/plugin-react-refresh';
+import dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config();
+
+const url = process.env.VITE_SERVER_URL;
 
 export default defineConfig({
-  plugins: [reactRefresh()],
+	plugins: [reactRefresh()],
+	define: {
+    'import.meta.env': process.env,
+  },
   server: {
     proxy: {
-      '/api': 'http://localhost:3000',
-      '/auth': 'http://localhost:3000'
+      '/api': `${url}`,
+      '/auth': `${url}`
     }
   }
 });
