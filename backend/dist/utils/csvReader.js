@@ -8,7 +8,9 @@ exports.getCharacterByName = exports.getAllCharacters = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const csv_parser_1 = __importDefault(require("csv-parser"));
-const PLAYER_DATA_PATH = 'C:/Users/Jamie/Zomboid/Lua/ServerPlayersData';
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+const PLAYER_DATA_PATH = process.env.CVS_LOCATION || '';
 const parseCSVFile = (filePath) => {
     return new Promise((resolve, reject) => {
         const results = [];

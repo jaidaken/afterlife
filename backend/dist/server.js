@@ -18,7 +18,7 @@ const users_1 = __importDefault(require("./routes/users"));
 const importCharacters_1 = require("./utils/importCharacters");
 dotenv_1.default.config();
 const { MONGO_URI, SESSION_SECRET, PORT } = process.env;
-if (!MONGO_URI || !SESSION_SECRET || !PORT) {
+if (!MONGO_URI || !SESSION_SECRET) {
     throw new Error('Missing required environment variables');
 }
 const app = (0, express_1.default)();

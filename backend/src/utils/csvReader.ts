@@ -2,8 +2,11 @@
 import fs from 'fs';
 import path from 'path';
 import csv from 'csv-parser';
+import dotenv from 'dotenv';
 
-const PLAYER_DATA_PATH = 'C:/Users/Jamie/Zomboid/Lua/ServerPlayersData';
+dotenv.config();
+
+const PLAYER_DATA_PATH = process.env.CVS_LOCATION || '';
 
 interface Character {
   username: string;
