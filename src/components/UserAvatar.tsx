@@ -7,8 +7,8 @@ interface UserAvatarProps {
   discriminator: string;
 }
 
-const UserAvatar: React.FC<UserAvatarProps> = ({ userId, avatarHash, discriminator }) => {
-  const avatarUrl = getDiscordAvatarUrl(userId, avatarHash, discriminator);
+const UserAvatar: React.FC<UserAvatarProps> = ({ userId, avatarHash }) => {
+  const avatarUrl = getDiscordAvatarUrl(userId, avatarHash);
   return <img src={avatarUrl} alt="User Avatar" className="w-16 h-16 rounded-full" />;
 };
 
