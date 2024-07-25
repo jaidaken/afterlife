@@ -15,7 +15,7 @@ import { importCharacters } from './utils/importCharacters';
 dotenv.config();
 
 const { MONGO_URI, SESSION_SECRET, PORT } = process.env;
-if (!MONGO_URI || !SESSION_SECRET ) {
+if (!MONGO_URI || !SESSION_SECRET || !PORT) {
   throw new Error('Missing required environment variables');
 }
 
