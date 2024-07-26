@@ -8,5 +8,23 @@
   to = "/.netlify/functions/server"
   status = 200
 
+[[plugins]]
+  package = "@netlify/plugin-functions-install-core"
+
+[[redirects]]
+  from = "/auth/discord"
+  to = "/.netlify/functions/server/auth/discord"
+  status = 200
+
+[[redirects]]
+  from = "/auth/discord/callback"
+  to = "/.netlify/functions/server/auth/discord/callback"
+  status = 200
+
+[[redirects]]
+  from = "/auth/logout"
+  to = "/.netlify/functions/server/auth/logout"
+  status = 200
+
 	[[plugins]]
 package = "@netlify/plugin-functions-install-core"
