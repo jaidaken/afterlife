@@ -23,7 +23,6 @@ if (!MONGO_URI || !SESSION_SECRET) {
 const app = express();
 
 app.use(cors({ origin: process.env.HOST_URL, credentials: true }));
-
 app.use(bodyParser.json());
 
 app.use(session({

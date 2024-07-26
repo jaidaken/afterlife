@@ -78,7 +78,6 @@ router.get('/logout', (req, res) => {
   });
 });
 
-// Add the /auth/me endpoint
 router.get('/me', (req, res) => {
   if (req.isAuthenticated()) {
     res.status(200).json(req.user);
