@@ -17,6 +17,7 @@ dotenv.config();
 
 const { MONGO_URI, SESSION_SECRET } = process.env;
 if (!MONGO_URI || !SESSION_SECRET) {
+  console.error('Missing required environment variables');
   throw new Error('Missing required environment variables');
 }
 
@@ -44,7 +45,9 @@ app.use('/auth', authRoutes);
 
 app.post('/api/import-characters', async (req, res) => {
   try {
+    console.log('Importing characters...');
     await importCharacters();
+    console.log('Characters imported successfully');
     res.status(200).send('Characters imported successfully');
   } catch (error) {
     console.error('Error importing characters:', error);
@@ -54,6 +57,7 @@ app.post('/api/import-characters', async (req, res) => {
 
 const connectToDatabase = async () => {
   try {
+		console.log('Attempting to connect to the database...');
     await mongoose.connect(MONGO_URI);
     console.log('Database connected successfully');
   } catch (error) {
@@ -72,15 +76,15 @@ connectToDatabase()
     });
 
     cron.schedule('*/10 * * * *', () => {
+      console.log('Running scheduled character import...');
       importCharacters().catch(error => {
         console.error('Error during scheduled character import:', error);
       });
     });
-
   })
   .catch(error => {
     console.error('Error connecting to the database:', error);
     process.exit(1); // Exit the process with a failure code
-	});
+  });
 
-	export const handler = serverless(app);
+export const handler = serverless(app);
