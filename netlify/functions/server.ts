@@ -63,13 +63,16 @@ cron.schedule('*/10 * * * *', () => {
   });
 });
 
-mongoose.connect(MONGO_URI)
-  .then(() => {
+const connectToDatabase = async () => {
+  try {
+    await mongoose.connect(MONGO_URI);
     console.log('Database connected successfully');
-  })
-  .catch(error => {
-    console.error('Database connection error:', error.message);
-    console.error(error.stack);
-  });
+  } catch (error) {
+    console.error('Database connection error:', (error as Error).message);
+    console.error((error as Error).stack);
+  }
+};
+
+connectToDatabase();
 
 module.exports.handler = serverless(app);
