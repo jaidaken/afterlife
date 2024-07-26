@@ -1,5 +1,5 @@
 import cron from 'node-cron';
-import authRoutes from './routes/auth';
+import {authRouter} from './routes/auth';
 import characterRouter from './routes/characters';
 import usersRouter from './routes/users';
 import { importCharacters } from './utils/importCharacters';
@@ -43,7 +43,7 @@ app.use(passport.session());
 
 app.use('/api', characterRouter);
 app.use('/api', usersRouter);
-app.use('/auth', authRoutes);
+app.use('/auth', authRouter);
 
 app.post('/api/import-characters', async (req, res) => {
   try {

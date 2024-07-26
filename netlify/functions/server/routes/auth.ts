@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import passport from 'passport';
 import { Strategy as DiscordStrategy } from 'passport-discord';
 import dotenv from 'dotenv';
@@ -78,12 +78,15 @@ router.get('/logout', (req, res) => {
   });
 });
 
-router.get('/me', (req, res) => {
+const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
   if (req.isAuthenticated()) {
-    res.status(200).json(req.user);
-  } else {
-    res.status(401).json({ message: 'Unauthorized' });
+    return next();
   }
+  res.status(401).json({ message: 'Unauthorized' });
+};
+
+router.get('/me', isAuthenticated, (req, res) => {
+  res.json(req.user);
 });
 
-export default router;
+export const authRouter = router;
