@@ -52,16 +52,6 @@ app.post('/api/import-characters', async (req, res) => {
   }
 });
 
-importCharacters().catch(error => {
-  console.error('Error during initial character import:', error);
-});
-
-cron.schedule('*/10 * * * *', () => {
-  importCharacters().catch(error => {
-    console.error('Error during scheduled character import:', error);
-  });
-});
-
 const connectToDatabase = async () => {
   try {
     await mongoose.connect(MONGO_URI);
@@ -73,6 +63,23 @@ const connectToDatabase = async () => {
   }
 };
 
-connectToDatabase().then(() => {
-  module.exports.handler = serverless(app);
-});
+connectToDatabase()
+  .then(() => {
+    console.log('Database connected successfully.');
+
+    importCharacters().catch(error => {
+      console.error('Error during initial character import:', error);
+    });
+
+    cron.schedule('*/10 * * * *', () => {
+      importCharacters().catch(error => {
+        console.error('Error during scheduled character import:', error);
+      });
+    });
+
+    module.exports.handler = serverless(app);
+  })
+  .catch(error => {
+    console.error('Error connecting to the database:', error);
+    process.exit(1); // Exit the process with a failure code
+  });
