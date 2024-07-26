@@ -77,9 +77,10 @@ connectToDatabase()
       });
     });
 
-    module.exports.handler = serverless(app);
   })
   .catch(error => {
     console.error('Error connecting to the database:', error);
     process.exit(1); // Exit the process with a failure code
-  });
+	});
+
+	export const handler = serverless(app);
