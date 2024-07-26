@@ -8,7 +8,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import MongoStore from 'connect-mongo';
 import cron from 'node-cron';
-import { authRouter } from './routes/auth';
+import authRoutes from './routes/auth';
 import characterRouter from './routes/characters';
 import usersRouter from './routes/users';
 import { importCharacters } from './utils/importCharacters';
@@ -39,9 +39,9 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/auth', authRouter);
 app.use('/api', characterRouter);
 app.use('/api', usersRouter);
+app.use('/auth', authRoutes);
 
 app.post('/api/import-characters', async (req, res) => {
   try {
