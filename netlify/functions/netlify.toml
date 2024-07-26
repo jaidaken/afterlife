@@ -8,9 +8,6 @@
   to = "/.netlify/functions/server"
   status = 200
 
-[[plugins]]
-  package = "@netlify/plugin-functions-install-core"
-
 [[redirects]]
   from = "/auth/discord"
   to = "/.netlify/functions/server/auth/discord"
