@@ -13,6 +13,8 @@ import passport from 'passport';
 import mongoose from 'mongoose';
 import serverless from 'serverless-http';
 
+console.log('Starting the server...');
+
 dotenv.config();
 
 const { MONGO_URI, SESSION_SECRET } = process.env;
