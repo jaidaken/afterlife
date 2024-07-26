@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,12 +8,12 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans', sans-serif;
 }
 
 body {
-  background-color: #121212;
-  color: #e0e0e0;
+  background-color: #1c1c1c; /* Zomboid background color */
+  color: #e0e0e0; /* Zomboid text color */
 }
 
 a {
