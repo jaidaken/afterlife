@@ -26,5 +26,10 @@
   to = "/.netlify/functions/server/auth/logout"
   status = 200
 
-	[[plugins]]
-package = "@netlify/plugin-functions-install-core"
+[[redirects]]
+  from = "/auth/me"
+  to = "/.netlify/functions/server/auth/me"
+  status = 200
+
+[[plugins]]
+  package = "@netlify/plugin-functions-install-core"

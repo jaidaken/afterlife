@@ -1,17 +1,17 @@
-import express from 'express';
-import serverless from 'serverless-http';
-import session from 'express-session';
-import bodyParser from 'body-parser';
-import mongoose from 'mongoose';
-import passport from 'passport';
-import dotenv from 'dotenv';
-import cors from 'cors';
-import MongoStore from 'connect-mongo';
 import cron from 'node-cron';
 import authRoutes from './routes/auth';
 import characterRouter from './routes/characters';
 import usersRouter from './routes/users';
 import { importCharacters } from './utils/importCharacters';
+import dotenv from 'dotenv';
+import express from 'express';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
+import passport from 'passport';
+import mongoose from 'mongoose';
+import serverless from 'serverless-http';
 
 dotenv.config();
 
@@ -70,9 +70,10 @@ const connectToDatabase = async () => {
   } catch (error) {
     console.error('Database connection error:', (error as Error).message);
     console.error((error as Error).stack);
+    process.exit(1); // Exit the process with a failure code
   }
 };
 
-connectToDatabase();
-
-module.exports.handler = serverless(app);
+connectToDatabase().then(() => {
+  module.exports.handler = serverless(app);
+});
