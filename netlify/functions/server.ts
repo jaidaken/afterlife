@@ -59,8 +59,10 @@ app.post('/api/import-characters', async (req, res) => {
 
 const connectToDatabase = async () => {
   try {
-		console.log('Attempting to connect to the database...');
-    await mongoose.connect(MONGO_URI);
+    console.log('Attempting to connect to the database...');
+    await mongoose.connect(MONGO_URI, {
+      serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds
+    });
     console.log('Database connected successfully');
   } catch (error) {
     console.error('Database connection error:', (error as Error).message);
