@@ -26,28 +26,11 @@ body::before::-webkit-scrollbar {
   width: 4px;
 }
 /* Hide scrollbar for all elements */
-* {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none;  /* Internet Explorer 10+ */
-}
 
 *::-webkit-scrollbar {
   display: none; /* Safari and Chrome */
 }
 
-.scrollbar-content {
-  overflow-y: scroll;
-  height: 100%;
-  box-sizing: border-box;
-}
-
-.scrollbar:hover, .scrollbar.dragging {
-  background-color: rgb(12, 136, 95);
-}
-
-.no-select {
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
+.rcs-inner-handle {
+	background-color: rgb(147 51 234) !important;
 }

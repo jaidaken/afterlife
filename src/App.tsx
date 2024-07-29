@@ -8,24 +8,28 @@ import CharacterDetail from './pages/CharacterDetail';
 import EditCharacter from './pages/EditCharacter';
 import { AuthProvider } from './context/AuthContext';
 import NavBar from './components/NavBar';
-import ScrollBar from './components/ScrollBar';
+import { CustomScroll } from "react-custom-scroll";
 
 
 const App: React.FC = () => {
 	return (
 		<AuthProvider>
 			<NavBar />
-			<ScrollBar>
-				<Routes>
-					<Route path="/" element={<Home />} />
-					<Route path="/dashboard" element={<UserDashboard />} />
-					<Route path="/admin" element={<AdminDashboard />} />
-					<Route path="/characters" element={<CharactersList />} />
-					<Route path="/character/:name" element={<CharacterDetail />} />
-					<Route path="/character/edit/:id" element={<EditCharacter />} />
+
+			<CustomScroll>
+				<div style={{ height: 'calc(100vh - 58px)' }}>
+					<Routes>
+						<Route path="/" element={<Home />} />
+						<Route path="/dashboard" element={<UserDashboard />} />
+						<Route path="/admin" element={<AdminDashboard />} />
+						<Route path="/characters" element={<CharactersList />} />
+						<Route path="/character/:name" element={<CharacterDetail />} />
+						<Route path="/character/edit/:id" element={<EditCharacter />} />
 					</Routes>
-			</ScrollBar>
-		</AuthProvider>
+				</div>
+			</CustomScroll>
+
+		</AuthProvider >
 	);
 };
 
