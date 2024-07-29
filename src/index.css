@@ -1,5 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -15,8 +14,40 @@ body {
   background-color: #1c1c1c; /* Zomboid background color */
   color: #e0e0e0; /* Zomboid text color */
 }
-
 a {
   text-decoration: none;
   color: inherit;
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+body::before::-webkit-scrollbar {
+  width: 4px;
+}
+/* Hide scrollbar for all elements */
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
+.scrollbar-content {
+  overflow-y: scroll;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.scrollbar:hover, .scrollbar.dragging {
+  background-color: rgb(12, 136, 95);
+}
+
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }

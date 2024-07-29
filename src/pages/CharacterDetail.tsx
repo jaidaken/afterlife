@@ -1,47 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useAuth } from '../context/AuthContext';
+import useAuth from '../hooks/useAuth';
 import SkillLevel from '../components/SkillLevel';
-
-interface Character {
-	charName: string;
-	profession: string;
-	isAlive: boolean;
-	Combat: number;
-	Axe: number;
-	LongBlunt: number;
-	ShortBlunt: number;
-	LongBlade: number;
-	ShortBlade: number;
-	Spear: number;
-	Maintenance: number;
-	Firearm: number;
-	Aiming: number;
-	Reloading: number;
-	Crafting: number;
-	Carpentry: number;
-	Cooking: number;
-	Farming: number;
-	FirstAid: number;
-	Electrical: number;
-	Metalworking: number;
-	Mechanics: number;
-	Tailoring: number;
-	Survivalist: number;
-	Fishing: number;
-	Trapping: number;
-	Foraging: number;
-	Passive: number;
-	Fitness: number;
-	Strength: number;
-	Agility: number;
-	Sprinting: number;
-	Lightfooted: number;
-	Nimble: number;
-	Sneaking: number;
-	_id: unknown;
-}
+import { Character } from '../models/Character';
 
 const getAvatarUrl = (charName: string): string => {
 	return `/avatars/${charName}.webp`;
@@ -71,7 +33,7 @@ const CharacterDetail: React.FC = () => {
 	};
 
 	if (!character) {
-		return <div>Loading...</div>;
+		return <div></div>;
 	}
 
 	return (

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import useAuth from '../hooks/useAuth';
 import axios from 'axios';
 
 interface Character {
@@ -65,7 +65,7 @@ const UserDashboard: React.FC = () => {
 	}
 
 	return (
-		<div className="flex justify-center min-h-screen">
+		<div className="flex justify-center">
 			<div className="text-gray-300 p-4 text-center">
 				<h1 className="text-3xl font-bold mb-4">User Dashboard</h1>
 				<p>This is the user dashboard, visible only to logged-in users.</p>

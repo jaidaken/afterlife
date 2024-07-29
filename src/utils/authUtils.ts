@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Dispatch, SetStateAction } from 'react';
-import { User } from '../context/AuthContext';
+import { User } from '../models/User';
 
 const url = import.meta.env.VITE_SERVER_URL;
 

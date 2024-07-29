@@ -1,51 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
-
-interface Character {
-  id: string;
-  charName: string;
-  profession: string;
-  isAlive: boolean;
-  zombieKills: number;
-  survivorKills: number;
-  hoursSurvived: number;
-  userId?: string;
-}
+import { useCharacters } from '../hooks/useCharacters';
 
 const getAvatarUrl = (charName: string): string => {
   return `/avatars/${charName}.webp`;
 };
 
 const CharactersList: React.FC = () => {
-  const [characters, setCharacters] = useState<Character[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('/api/characters');
-        if (response.data && Array.isArray(response.data)) {
-          setCharacters(response.data);
-        } else {
-          console.error('Unexpected response format:', response.data);
-        }
-      } catch (error) {
-        console.error('Error fetching characters', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+  const { characters, loading } = useCharacters();
 
   if (loading) {
-    return <div className="p-4">Loading...</div>;
+    return <div className="p-4"></div>;
   }
 
   return (
-    <div className="flex justify-center min-h-screen">
+    <div className="flex justify-center">
       <div className="p-4">
         <h1 className="text-2xl mb-4 text-white flex justify-center">Characters</h1>
         {characters.length === 0 ? (
