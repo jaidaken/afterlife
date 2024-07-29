@@ -56,7 +56,8 @@ importCharacters().catch(error => {
   console.error('Error during initial character import:', error);
 });
 
-cron.schedule('*/10 * * * *', () => {
+//run import characters every 60 seconds
+cron.schedule('*/60 * * * * *', () => {
   importCharacters().catch(error => {
     console.error('Error during scheduled character import:', error);
   });
