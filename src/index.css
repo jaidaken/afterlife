@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -14,6 +15,7 @@ body {
   background-color: #1c1c1c; /* Zomboid background color */
   color: #e0e0e0; /* Zomboid text color */
 }
+
 a {
   text-decoration: none;
   color: inherit;

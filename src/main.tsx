@@ -1,19 +1,13 @@
 import React from 'react';
-import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import App from './App';
-import { CharacterProvider } from './context/CharacterContext';
+import ReactDOM from 'react-dom/client';
 import './index.css';
+import App from './App';
 
-const container = document.getElementById('root');
-const root = createRoot(container!);
+const rootElement = document.getElementById('root') as HTMLElement;
+const root = ReactDOM.createRoot(rootElement);
 
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <CharacterProvider>
-        <App />
-      </CharacterProvider>
-    </BrowserRouter>
+    <App />
   </React.StrictMode>
 );

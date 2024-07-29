@@ -1,6 +1,4 @@
-// backend/src/models/Character.ts
 import mongoose, { Document, Model, Schema } from 'mongoose'
-
 
 export interface ICharacter extends Document {
 	charName: string;

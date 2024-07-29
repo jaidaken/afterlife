@@ -1,39 +1,34 @@
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
-import { fetchUser } from '../utils/authUtils';
-import { User } from '../models/User';
+import React, { createContext, useEffect, useState, ReactNode } from 'react';
+import { fetchUser, login, logout } from '../utils/authUtils';
+
+export interface User {
+	discordId: string;
+	username: string;
+	avatar: string;
+	isAdmin: boolean;
+	characters: string[];
+}
 
 export interface AuthContextType {
   user: User | null;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
   login: () => void;
   logout: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    fetchUser(setUser).finally(() => setLoading(false));
+    fetchUser(setUser);
   }, []);
 
-  const login = () => {
-    // login logic
-  };
-
-  const logout = () => {
-    // logout logic
-  };
-
-  if (loading) {
-    return <div></div>;
-  }
-
   return (
-    <AuthContext.Provider value={{ user, setUser, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout: () => logout(setUser) }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
+export default AuthProvider;

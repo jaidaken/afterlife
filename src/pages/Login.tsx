@@ -1,30 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import useAuth from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 
 const Login: React.FC = () => {
-  const { login, user } = useAuth();
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState<boolean>(!user);
   const [username, setUsername] = useState<string>('');
-
-  useEffect(() => {
-    if (user) {
-      navigate('/');
-    } else {
-      setLoading(false);
-    }
-  }, [user, navigate]);
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     login();
     navigate('/');
   };
-
-  if (loading) {
-    return <div></div>;
-  }
 
   return (
     <div>

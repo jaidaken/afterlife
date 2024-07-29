@@ -1,13 +1,34 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useCharacters } from '../hooks/useCharacters';
+import axios from 'axios';
+import { Character } from '../models/Character';
 
 const getAvatarUrl = (charName: string): string => {
   return `/avatars/${charName}.webp`;
 };
 
 const CharactersList: React.FC = () => {
-  const { characters, loading } = useCharacters();
+  const [characters, setCharacters] = useState<Character[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('/api/characters');
+        if (response.data && Array.isArray(response.data)) {
+          setCharacters(response.data);
+        } else {
+          console.error('Unexpected response format:', response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching characters', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   if (loading) {
     return <div className="p-4"></div>;
