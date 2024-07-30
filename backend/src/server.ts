@@ -71,7 +71,7 @@ mongoose.connect(MONGO_URI)
       console.error(`Invalid port number: ${PORT}`);
       process.exit(1);
     }
-    app.listen(port, () => {
+    app.listen(port, '0.0.0.0', () => {
       console.log(`Server running on port ${port}`);
     });
   })

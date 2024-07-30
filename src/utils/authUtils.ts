@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Dispatch, SetStateAction } from 'react';
 import { User } from '../models/User';
 
-const url = import.meta.env.VITE_SERVER_URL;
+const url = import.meta.env.VITE_HOST_URL;
 
 export const fetchUser = async (setUser: Dispatch<SetStateAction<User | null>>) => {
   try {
