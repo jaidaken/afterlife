@@ -10,6 +10,7 @@ import cron from 'node-cron';
 import { authRouter } from './routes/auth';
 import characterRouter from './routes/characters';
 import usersRouter from './routes/users';
+import zomboidRouter from './routes/zomboid';
 import { importCharacters } from './utils/importCharacters';
 
 dotenv.config();
@@ -41,6 +42,7 @@ app.use(passport.session());
 app.use('/auth', authRouter);
 app.use('/api', characterRouter);
 app.use('/api', usersRouter);
+app.use('/api/zomboid', zomboidRouter);
 
 app.post('/api/import-characters', async (req, res) => {
   try {
