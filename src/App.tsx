@@ -9,6 +9,7 @@ import EditCharacter from './pages/EditCharacter';
 import AuthProvider from './context/AuthContext';
 import NavBar from './components/NavBar';
 import { CustomScroll } from "react-custom-scroll";
+import CreateCharacter from './pages/CreateCharacter';
 
 const App: React.FC = () => (
 	<AuthProvider>
@@ -23,6 +24,7 @@ const App: React.FC = () => (
 						<Route path="/characters" element={<CharactersList />} />
 						<Route path="/character/:name" element={<CharacterDetail />} />
 						<Route path="/character/edit/:id" element={<EditCharacter />} />
+						<Route path="/create-character" element={<CreateCharacter />} />
 					</Routes>
 				</div>
 			</CustomScroll>

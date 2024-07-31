@@ -2,6 +2,8 @@ import express from 'express';
 import { getAllCharacters } from '../utils/csvReader';
 import Character from '../models/Character';
 import User from '../models/User';
+import CharacterQueue from '../models/CharacterQueue';
+import { encryptPassword, generateRandomPassword } from '../utils/passwordUtils';
 
 const router = express.Router();
 
@@ -28,6 +30,69 @@ router.post('/characters/import', async (req, res) => {
   }
 });
 
+router.post('/character-queue', async (req, res) => {
+  const { name, appearance, personality, alignment, discordId } = req.body;
+
+  if (!name || !appearance || !personality || !alignment || !discordId) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  try {
+    const newCharacter = new CharacterQueue({
+      name,
+      appearance,
+      personality,
+      alignment,
+			discordId,
+    });
+
+    const savedCharacter = await newCharacter.save();
+    res.status(201).json(savedCharacter);
+  } catch (error) {
+    res.status(500).json({ message: 'Error adding character to queue', error });
+  }
+});
+
+router.get('/character-queue', async (req, res) => {
+  try {
+    const characterQueue = await CharacterQueue.find();
+    res.json(characterQueue);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching character queue', error });
+  }
+});
+
+router.post('/accept-character/:discordId', async (req, res) => {
+  const { discordId } = req.params;
+
+  try {
+    const characterQueueItem = await CharacterQueue.findOne({ discordId });
+    if (!characterQueueItem) {
+      return res.status(404).json({ message: 'Character not found in queue' });
+    }
+
+    const password = generateRandomPassword(24);
+    const encryptedPassword = encryptPassword(password);
+
+    const newCharacter = new Character({
+      charName: characterQueueItem.name,
+      appearance: characterQueueItem.appearance,
+      personality: characterQueueItem.personality,
+      alignment: characterQueueItem.alignment,
+      discordId: characterQueueItem.discordId,
+      password: encryptedPassword,
+    });
+
+    await newCharacter.save();
+    await CharacterQueue.findOneAndDelete({ discordId });
+
+    res.status(201).json(newCharacter);
+  } catch (error) {
+    console.error('Error accepting character:', error);
+    res.status(500).json({ message: 'Error accepting character', error });
+  }
+});
+
 router.get('/characters', async (req, res) => {
   try {
     const characters = await Character.find();
@@ -38,10 +103,10 @@ router.get('/characters', async (req, res) => {
   }
 });
 
-router.get('/characters/user/:userId', async (req, res) => {
+router.get('/characters/user/:discordId', async (req, res) => {
   try {
-    const { userId } = req.params;
-    const characters = await Character.find({ userId });
+    const { discordId } = req.params;
+    const characters = await Character.find({ discordId });
     res.json(characters);
   } catch (error) {
     console.error('Error fetching user characters:', error);
@@ -101,6 +166,9 @@ router.post('/characters', async (req, res) => {
   }
 
   try {
+    const password = generateRandomPassword();
+    const encryptedPassword = encryptPassword(password);
+
     const newCharacter = new Character({
       username,
       steamID,
@@ -110,6 +178,7 @@ router.post('/characters', async (req, res) => {
       zombieKills,
       survivorKills,
       hoursSurvived,
+      password: encryptedPassword
     });
 
     const savedCharacter = await newCharacter.save();

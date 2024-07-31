@@ -11,6 +11,7 @@ import { authRouter } from './routes/auth';
 import characterRouter from './routes/characters';
 import usersRouter from './routes/users';
 import zomboidRouter from './routes/zomboid';
+import passwordRoutes from './routes/password';
 import { importCharacters } from './utils/importCharacters';
 
 dotenv.config();
@@ -43,6 +44,7 @@ app.use('/auth', authRouter);
 app.use('/api', characterRouter);
 app.use('/api', usersRouter);
 app.use('/api/zomboid', zomboidRouter);
+app.use('/api', passwordRoutes);
 
 app.post('/api/import-characters', async (req, res) => {
   try {
