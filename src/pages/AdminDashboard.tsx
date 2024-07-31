@@ -7,7 +7,7 @@ import CommandSender from '../components/CommandSender';
 import { generateRandomPassword } from '../utils/password';
 
 const getAvatarUrl = (charName: string): string => {
-	return `/avatars/${charName}.webp` || '' ;
+	return `/avatars/${charName}.webp` || '';
 };
 
 const AdminDashboard: React.FC = () => {
@@ -17,6 +17,8 @@ const AdminDashboard: React.FC = () => {
 
 	const [isCommandSenderModalOpen, setIsCommandSenderModalOpen] = useState(false);
 	const [characterQueue, setCharacterQueue] = useState<any[]>([]);
+	const [users, setUsers] = useState<User[]>([]);
+	const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
 
 	const handleImportCharacters = async () => {
 		try {
@@ -28,11 +30,22 @@ const AdminDashboard: React.FC = () => {
 		}
 	};
 
+	const getUsernameByDiscordId = (discordId: string) => {
+		const user = users.find((user) => user.discordId === discordId);
+		return user ? user.username : 'Unknown';
+	};
+
 	useEffect(() => {
 		axios.get('/api/character-queue').then((response) => {
 			setCharacterQueue(response.data);
 		}).catch((error) => {
 			console.error('Error fetching character queue', error);
+		});
+
+		axios.get('/api/users').then((response) => {
+			setUsers(response.data);
+		}).catch((error) => {
+			console.error('Error fetching users', error);
 		});
 	}, []);
 
@@ -59,6 +72,14 @@ const AdminDashboard: React.FC = () => {
 			console.error('Error accepting character:', error);
 			alert('Failed to accept character');
 		}
+	};
+
+	const handleOpenModal = (character: Character) => {
+		setSelectedCharacter(character);
+	};
+
+	const handleCloseModal = () => {
+		setSelectedCharacter(null);
 	};
 
 	if (!user) {
@@ -110,33 +131,63 @@ const AdminDashboard: React.FC = () => {
 				</div>
 			)}
 
-			<div className="mt-8">
+			{selectedCharacter && (
+				<div className="fixed p-6 inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+					<div className="bg-gray-800 text-gray-300 p-8 rounded-lg shadow-lg w-full max-w-3xl max-h-full overflow-y-auto">
+						<div className="flex flex-col items-center">
+							<h2 className="text-2xl mb-4">{selectedCharacter.charName}</h2>
+							<img
+								src={getAvatarUrl(selectedCharacter.charName)}
+								alt={`${selectedCharacter.charName}'s avatar`}
+								className="w-64 h-64 mb-4"
+							/>
+						</div>
+						<p className="text-center leading-7"><strong>Age</strong><br /> {selectedCharacter.age}</p>
+						<p className="text-center leading-7"><strong>Birthplace</strong><br /> {selectedCharacter.birthplace}</p>
+						<p className="text-center leading-7"><strong>Pronouns</strong><br /> {selectedCharacter.gender}</p>
+						<p className="text-center leading-7"><strong>Appearance</strong><br /> {selectedCharacter.appearance}</p>
+						<p className="text-center leading-7"><strong>Personality</strong><br /> {selectedCharacter.personality}</p>
+						<p className="text-center leading-7"><strong>Backstory</strong><br /> {selectedCharacter.backstory}</p>
+						<div className="flex justify-end mt-4">
+							<button
+								onClick={() => handleAcceptCharacter(selectedCharacter)}
+								className="bg-green-500 text-white py-2 px-4 rounded mr-2"
+							>
+								Accept
+							</button>
+							<button
+								onClick={handleCloseModal}
+								className="bg-red-500 text-white py-2 px-4 rounded"
+							>
+								Close
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
+
+			<div className="mt-8 flex flex-col justify-center items-center pb-10 ">
 				<h2 className="text-2xl mb-4">Character Queue</h2>
-				<ul>
-					{characterQueue.map((character) => (
-						<li key={character._id} className="mb-4">
-							<div className="bg-gray-800 p-4 rounded-lg shadow-lg flex items-center">
-								<img
-									src={getAvatarUrl(character.charName)}
-									alt={`${character.charName}'s avatar`}
-									className="w-64 h-64 mr-4"
-								/>
-								<div>
-									<p><strong>Name:</strong> {character.charName}</p>
-									<p><strong>Appearance:</strong> {character.appearance}</p>
-									<p><strong>Personality:</strong> {character.personality}</p>
-									<p><strong>Alignment:</strong> {character.alignment}</p>
+				<div className="w-full mx-auto">
+					<ul>
+						{characterQueue.map((character) => (
+							<li key={character._id} className="mb-4 p-6 w-full bg-gray-800 rounded-lg shadow-lg">
+								<div className="flex justify-between items-center gap-4">
+									<div>
+										<p className="text-center"><strong>Name:</strong> {character.charName}</p>
+										<p className="text-center"><strong>Username:</strong> {getUsernameByDiscordId(character.discordId)}</p>
+									</div>
 									<button
-										onClick={() => handleAcceptCharacter(character)}
-										className="bg-green-500 text-white py-2 px-4 rounded mt-2"
+										onClick={() => handleOpenModal(character)}
+										className="bg-blue-500 text-white py-2 px-4 rounded"
 									>
-										Accept
+										View Details
 									</button>
 								</div>
-							</div>
-						</li>
-					))}
-				</ul>
+							</li>
+						))}
+					</ul>
+				</div>
 			</div>
 		</div>
 	);

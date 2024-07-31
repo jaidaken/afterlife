@@ -4,9 +4,12 @@ import { ObjectId } from 'mongodb';
 export interface Character {
 	_id?: ObjectId;
 	charName: string;
+	age?: number;
+	birthplace?: string;
+	gender?: string;
 	appearance?: string;
 	personality?: string;
-	alignment?: string;
+	backstory?: string;
 	profession?: string;
 	username?: string;
 	steamID?: string;

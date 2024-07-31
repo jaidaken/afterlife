@@ -9,6 +9,7 @@
   padding: 0;
   box-sizing: border-box;
   font-family: 'Open Sans', sans-serif;
+	font-size: 14px;
 }
 
 body {
@@ -35,4 +36,11 @@ body::before::-webkit-scrollbar {
 
 .rcs-inner-handle {
 	background-color: rgb(147 51 234) !important;
+}
+
+input:focus {
+	border: 1px solid #adadad; /* Change the border color */
+	border-radius: 0px; /* Change the border radius */
+	outline: none; /* Remove the default outline */
+
 }

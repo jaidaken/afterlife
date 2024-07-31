@@ -31,19 +31,22 @@ router.post('/characters/import', async (req, res) => {
 });
 
 router.post('/character-queue', async (req, res) => {
-  const { charName, appearance, personality, alignment, discordId } = req.body;
+  const { charName, discordId, age, birthplace, gender, appearance, personality, backstory } = req.body;
 
-  if (!charName || !appearance || !personality || !alignment || !discordId) {
+  if (!charName || !discordId || !age || !birthplace || !gender || !appearance || !personality || !backstory) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
   try {
     const newCharacter = new CharacterQueue({
       charName,
+      discordId,
+      age,
+      birthplace,
+      gender,
       appearance,
       personality,
-      alignment,
-      discordId,
+      backstory,
     });
 
     const savedCharacter = await newCharacter.save();
@@ -76,12 +79,15 @@ router.post('/accept-character/:discordId', async (req, res) => {
     const encryptedPassword = await encryptPassword(password);
 
     const newCharacter = new Character({
-      charName: characterQueueItem.charName,
+			charName: characterQueueItem.charName,
+			discordId: characterQueueItem.discordId,
+			age: characterQueueItem.age,
+			birthplace: characterQueueItem.birthplace,
+			gender: characterQueueItem.gender,
       appearance: characterQueueItem.appearance,
       personality: characterQueueItem.personality,
-      alignment: characterQueueItem.alignment,
-      discordId: characterQueueItem.discordId,
-      password: encryptedPassword,
+      backstory: characterQueueItem.backstory,
+			password: encryptedPassword,
     });
 
     await newCharacter.save();

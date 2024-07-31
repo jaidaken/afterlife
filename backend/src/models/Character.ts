@@ -6,9 +6,12 @@ export interface ICharacter extends Document {
 	_id?: ObjectId;
 	charName: string;
 	password: string;
-	appearance: string;
-	personality: string;
-	alignment: string;
+	age?: number;
+	birthplace?: string;
+	gender?: string;
+	appearance?: string;
+	personality?: string;
+	backstory?: string;
 	profession: string;
 	username: string;
 	steamID: string;
@@ -75,9 +78,12 @@ export interface ICharacter extends Document {
 const CharacterSchema = new Schema<ICharacter>({
 	charName: { type: String, required: true, unique: true },
 	password: { type: String, required: false },
+	age: { type: Number, required: false },
+	birthplace: { type: String, required: false },
+	gender: { type: String, required: false },
 	appearance: { type: String, required: false },
 	personality: { type: String, required: false },
-	alignment: { type: String, required: false },
+	backstory: { type: String, required: false },
   profession: { type: String, required: false },
   username: { type: String, required: false },
 	steamID: { type: String, required: false },
