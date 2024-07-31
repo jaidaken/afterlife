@@ -60,19 +60,22 @@ const AdminDashboard: React.FC = () => {
 	};
 
 	const handleAcceptCharacter = async (character: Character) => {
-		try {
-			const password = generateRandomPassword();
-			const rconCommand = `adduser "${character.charName}" "${password}"`;
-			await handleSendCommand(rconCommand);
-			await axios.post(`/api/accept-character/${character.discordId}`, {
-				password: password,
-			});
-			alert('Character accepted successfully');
-		} catch (error) {
-			console.error('Error accepting character:', error);
-			alert('Failed to accept character');
-		}
-	};
+    try {
+        const password = generateRandomPassword();
+        const rconCommand = `adduser "${character.charName}" "${password}"`;
+        await handleSendCommand(rconCommand);
+        await axios.post(`/api/accept-character/${character.discordId}`, {
+            password: password,
+        });
+        alert('Character accepted successfully');
+        setSelectedCharacter(null);
+        const response = await axios.get('/api/character-queue');
+        setCharacterQueue(response.data);
+    } catch (error) {
+        console.error('Error accepting character:', error);
+        alert('Failed to accept character');
+    }
+};
 
 	const handleOpenModal = (character: Character) => {
 		setSelectedCharacter(character);
