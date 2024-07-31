@@ -7,7 +7,7 @@ import { Character } from '../models/Character';
 import { decryptPassword } from '../utils/password';
 
 const getAvatarUrl = (charName: string): string => {
-	return `/avatars/${charName}.webp`;
+	return `/avatars/${charName}.webp` || '' ;
 };
 
 const CharacterDetail: React.FC = () => {

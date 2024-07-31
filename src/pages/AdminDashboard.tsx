@@ -6,6 +6,10 @@ import { Character } from '../models/Character';
 import CommandSender from '../components/CommandSender';
 import { generateRandomPassword } from '../utils/password';
 
+const getAvatarUrl = (charName: string): string => {
+	return `/avatars/${charName}.webp` || '' ;
+};
+
 const AdminDashboard: React.FC = () => {
 	const { user } = useAuth();
 
@@ -66,7 +70,7 @@ const AdminDashboard: React.FC = () => {
 	}
 
 	return (
-		<div className="text-gray-300 flex items-center flex-col">
+		<div className="text-gray-300 flex items-center flex-col mt-10">
 			<div className="flex justify-center items-center flex-col">
 				<h1 className="text-3xl font-bold mb-4">Admin Dashboard</h1>
 				<p className="mb-4">This is the admin dashboard, visible only to admin users.</p>
@@ -111,17 +115,24 @@ const AdminDashboard: React.FC = () => {
 				<ul>
 					{characterQueue.map((character) => (
 						<li key={character._id} className="mb-4">
-							<div className="bg-gray-800 p-4 rounded-lg shadow-lg">
-								<p><strong>Name:</strong> {character.name}</p>
-								<p><strong>Appearance:</strong> {character.appearance}</p>
-								<p><strong>Personality:</strong> {character.personality}</p>
-								<p><strong>Alignment:</strong> {character.alignment}</p>
-								<button
-									onClick={() => handleAcceptCharacter(character)}
-									className="bg-green-500 text-white py-2 px-4 rounded mt-2"
-								>
-									Accept
-								</button>
+							<div className="bg-gray-800 p-4 rounded-lg shadow-lg flex items-center">
+								<img
+									src={getAvatarUrl(character.charName)}
+									alt={`${character.charName}'s avatar`}
+									className="w-64 h-64 mr-4"
+								/>
+								<div>
+									<p><strong>Name:</strong> {character.charName}</p>
+									<p><strong>Appearance:</strong> {character.appearance}</p>
+									<p><strong>Personality:</strong> {character.personality}</p>
+									<p><strong>Alignment:</strong> {character.alignment}</p>
+									<button
+										onClick={() => handleAcceptCharacter(character)}
+										className="bg-green-500 text-white py-2 px-4 rounded mt-2"
+									>
+										Accept
+									</button>
+								</div>
 							</div>
 						</li>
 					))}

@@ -74,7 +74,7 @@ export interface ICharacter extends Document {
 
 const CharacterSchema = new Schema<ICharacter>({
 	charName: { type: String, required: true, unique: true },
-	password: { type: String, required: true },
+	password: { type: String, required: false },
 	appearance: { type: String, required: false },
 	personality: { type: String, required: false },
 	alignment: { type: String, required: false },

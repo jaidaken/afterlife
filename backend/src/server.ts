@@ -12,6 +12,7 @@ import characterRouter from './routes/characters';
 import usersRouter from './routes/users';
 import zomboidRouter from './routes/zomboid';
 import passwordRoutes from './routes/password';
+import imageRouter from './routes/image';
 import { importCharacters } from './utils/importCharacters';
 
 dotenv.config();
@@ -25,7 +26,8 @@ const app = express();
 
 app.use(cors({ origin: process.env.HOST_URL, credentials: true }));
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
 app.use(session({
   secret: SESSION_SECRET,
@@ -45,6 +47,7 @@ app.use('/api', characterRouter);
 app.use('/api', usersRouter);
 app.use('/api/zomboid', zomboidRouter);
 app.use('/api', passwordRoutes);
+app.use('/api/image', imageRouter);
 
 app.post('/api/import-characters', async (req, res) => {
   try {

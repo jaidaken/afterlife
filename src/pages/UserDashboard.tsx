@@ -45,7 +45,7 @@ const UserDashboard: React.FC = () => {
 	}
 
 	return (
-			<div className="text-gray-300 flex items-center flex-col">
+			<div className="text-gray-300 flex items-center flex-col mt-10">
 					<div className="flex justify-center items-center flex-col">
 							<h1 className="text-3xl font-bold mb-4">User Dashboard</h1>
 							<p>This is the user dashboard, visible only to logged-in users.</p>
