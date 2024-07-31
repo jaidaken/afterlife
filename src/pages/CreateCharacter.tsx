@@ -6,13 +6,14 @@ import { Character } from '../models/Character';
 const CreateCharacter: React.FC = () => {
   const { user } = useAuth();
   const [character, setCharacter] = useState<Character>({
-    charName: '',
+		charName: '',
+		discordId: '',
+    isAlive: true,
     appearance: '',
     personality: '',
     alignment: '',
-    profession: '',
-    discordId: user?.discordId || '',
   });
+	
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;

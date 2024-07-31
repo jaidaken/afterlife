@@ -1,6 +1,5 @@
 import { getAllCharacters } from './csvReader';
 import Character from '../models/Character';
-import { encryptPassword, generateRandomPassword } from './passwordUtils';
 
 export const importCharacters = async () => {
   try {
@@ -8,12 +7,8 @@ export const importCharacters = async () => {
 
     await Promise.all(
       characters.map(async (character) => {
-        const password = generateRandomPassword();
-        const encryptedPassword = encryptPassword(password);
-
         const updatedCharacter = {
-          ...character,
-          password: encryptedPassword,
+          ...character
         };
 
         await Character.findOneAndUpdate(

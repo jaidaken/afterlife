@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const CharacterQueueSchema = new mongoose.Schema({
-  name: { type: String, required: true },
+  charName: { type: String, required: true },
   appearance: { type: String, required: true },
   personality: { type: String, required: true },
   alignment: { type: String, required: true },

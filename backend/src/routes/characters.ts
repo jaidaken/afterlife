@@ -3,7 +3,7 @@ import { getAllCharacters } from '../utils/csvReader';
 import Character from '../models/Character';
 import User from '../models/User';
 import CharacterQueue from '../models/CharacterQueue';
-import { encryptPassword, generateRandomPassword } from '../utils/passwordUtils';
+import { encryptPassword } from '../utils/passwordUtils';
 
 const router = express.Router();
 
@@ -31,19 +31,19 @@ router.post('/characters/import', async (req, res) => {
 });
 
 router.post('/character-queue', async (req, res) => {
-  const { name, appearance, personality, alignment, discordId } = req.body;
+  const { charName, appearance, personality, alignment, discordId } = req.body;
 
-  if (!name || !appearance || !personality || !alignment || !discordId) {
+  if (!charName || !appearance || !personality || !alignment || !discordId) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
   try {
     const newCharacter = new CharacterQueue({
-      name,
+      charName,
       appearance,
       personality,
       alignment,
-			discordId,
+      discordId,
     });
 
     const savedCharacter = await newCharacter.save();
@@ -64,6 +64,7 @@ router.get('/character-queue', async (req, res) => {
 
 router.post('/accept-character/:discordId', async (req, res) => {
   const { discordId } = req.params;
+  const { password } = req.body;
 
   try {
     const characterQueueItem = await CharacterQueue.findOne({ discordId });
@@ -71,11 +72,11 @@ router.post('/accept-character/:discordId', async (req, res) => {
       return res.status(404).json({ message: 'Character not found in queue' });
     }
 
-    const password = generateRandomPassword(24);
-    const encryptedPassword = encryptPassword(password);
+    // Encrypt the password
+    const encryptedPassword = await encryptPassword(password);
 
     const newCharacter = new Character({
-      charName: characterQueueItem.name,
+      charName: characterQueueItem.charName,
       appearance: characterQueueItem.appearance,
       personality: characterQueueItem.personality,
       alignment: characterQueueItem.alignment,
@@ -166,9 +167,6 @@ router.post('/characters', async (req, res) => {
   }
 
   try {
-    const password = generateRandomPassword();
-    const encryptedPassword = encryptPassword(password);
-
     const newCharacter = new Character({
       username,
       steamID,
@@ -177,8 +175,7 @@ router.post('/characters', async (req, res) => {
       isAlive,
       zombieKills,
       survivorKills,
-      hoursSurvived,
-      password: encryptedPassword
+      hoursSurvived
     });
 
     const savedCharacter = await newCharacter.save();
