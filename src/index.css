@@ -1,5 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,38 +8,69 @@
   padding: 0;
   box-sizing: border-box;
   font-family: 'Open Sans', sans-serif;
-	font-size: 14px;
+  font-size: 14px;
+}
+
+#root {
+	flex: 1;
+	flex-direction: column;
 }
 
 body {
-  background-color: #1c1c1c; /* Zomboid background color */
-  color: #e0e0e0; /* Zomboid text color */
+  background-color: #1c1c1c;
+  color: #e0e0e0;
 }
 
 a {
   text-decoration: none;
   color: inherit;
 }
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
 }
+
 body::before::-webkit-scrollbar {
   width: 4px;
 }
-/* Hide scrollbar for all elements */
-
-*::-webkit-scrollbar {
-  display: none; /* Safari and Chrome */
-}
-
-.rcs-inner-handle {
-	background-color: rgb(147 51 234) !important;
-}
 
 input:focus {
-	border: 1px solid #adadad; /* Change the border color */
-	border-radius: 0px; /* Change the border radius */
-	outline: none; /* Remove the default outline */
+  border: 1px solid #adadad; /* Change the border color */
+  border-radius: 0px; /* Change the border radius */
+  outline: none; /* Remove the default outline */
+}
 
+footer {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+/* Hide the default scrollbar */
+body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+
+.thumb-vertical {
+	border-radius: inherit;
+	background-color: rgba(63, 63, 63, 0.5);
+	width: 6px !important;
+}
+
+.track-vertical {
+	position: absolute;
+	display: flex;
+	justify-content: center;
+	width: 12px !important;
+	right: 0px;
+	bottom: 2px;
+	top: 2px;
+	border-radius: 5px;
+	background-color: rgba(14, 14, 14, 0.5);
+	padding: 3px 0 3px 0;
+}
+.hide-track .track-vertical {
+  display: none;
 }
