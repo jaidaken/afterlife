@@ -36,7 +36,7 @@ const CharactersList: React.FC = () => {
 
   return (
     <div className="flex justify-center mt-6">
-      <div className="p-4">
+      <div className="p-4 w-3/4">
         <h1 className="text-3xl font-bold mb-4 flex justify-center">Characters</h1>
         {characters.length === 0 ? (
           <p>No characters found.</p>

@@ -30,6 +30,7 @@ const CreateCharacter: React.FC = () => {
 	const [position, setPosition] = useState({ x: 0.5, y: 0.5 });
 	const [croppedImage, setCroppedImage] = useState<string | null>(null);
 	const [showCropper, setShowCropper] = useState<boolean>(false);
+	const [errorMessage, setErrorMessage] = useState('');
 
 	const editorRef = React.useRef<AvatarEditor>(null);
 
@@ -57,59 +58,71 @@ const CreateCharacter: React.FC = () => {
 	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+		e.preventDefault();
 
-    const missingFields = [];
-    if (!character.charName) missingFields.push('Character name');
-    if (!user?.discordId) missingFields.push('Discord ID');
-    if (!croppedImage) missingFields.push('Avatar');
-    if (!character.age) missingFields.push('Age');
-    if (!character.birthplace) missingFields.push('Birthplace');
-    if (!character.gender) missingFields.push('Pronouns');
-    if (!character.appearance) missingFields.push('Appearance');
-    if (!character.personality) missingFields.push('Personality');
-    if (!character.backstory) missingFields.push('Backstory');
+		const missingFields = [];
+		if (!character.charName) missingFields.push('Character name');
+		if (!user?.discordId) missingFields.push('Discord ID');
+		if (!croppedImage) missingFields.push('Avatar');
+		if (!character.age) missingFields.push('Age');
+		if (!character.birthplace) missingFields.push('Birthplace');
+		if (!character.gender) missingFields.push('Pronouns');
+		if (!character.appearance) missingFields.push('Appearance');
+		if (!character.personality) missingFields.push('Personality');
+		if (!character.backstory) missingFields.push('Backstory');
 
-    if (missingFields.length > 0) {
-        alert(`The following fields are required: ${missingFields.join(', ')}`);
-        return;
-    }
+		if (missingFields.length > 0) {
+			setErrorMessage(`The following fields are required: ${missingFields.join(', ')}`);
+			return;
+		}
 
-    const capitalizedCharName = capitalizeName(character.charName);
+		const capitalizedCharName = capitalizeName(character.charName);
 
-    try {
-        const formData = new FormData();
-        if (croppedImage) {
-            const blob = await (await fetch(croppedImage)).blob();
-            formData.append('avatar', blob, 'avatar.webp');
-        }
-        formData.append('charName', capitalizedCharName);
+		try {
+			// Check if character name already exists
+			const checkResponse = await axios.get(`/api/characters/${capitalizedCharName}`);
+			if (checkResponse.status === 409) {
+				setErrorMessage('Character name already exists. Please choose a different name.');
+				return;
+			}
 
-        await axios.post('/api/image/convert', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
 
-        const payload = {
-            ...character,
-            charName: capitalizedCharName,
-            discordId: user?.discordId,
-        };
+			const formData = new FormData();
+			if (croppedImage) {
+				const blob = await (await fetch(croppedImage)).blob();
+				formData.append('avatar', blob, 'avatar.webp');
+			}
+			formData.append('charName', capitalizedCharName);
 
-        await axios.post('/api/character-queue', payload, {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
+			await axios.post('/api/image/convert', formData, {
+				headers: {
+					'Content-Type': 'multipart/form-data',
+				},
+			});
 
-        alert('Character created successfully!');
-        window.location.href = '/dashboard';
-    } catch (error) {
-        console.error('Error uploading avatar', error);
-        alert('There was an error creating the character.');
-    }
-};
+			const payload = {
+				...character,
+				charName: capitalizedCharName,
+				discordId: user?.discordId,
+			};
+
+			await axios.post('/api/character-queue', payload, {
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			});
+
+			alert('Character creation succesful, sent to queue for admin approval!');
+			window.location.href = '/dashboard';
+		} catch (error: any) {
+			if (error.response && error.response.status === 409) {
+				setErrorMessage('Character name already exists. Please choose a different name.');
+			} else {
+				console.error('Error uploading avatar', error);
+				setErrorMessage('There was an error creating the character.');
+			}
+		}
+	};
 
 	return (
 		<div className="flex justify-center mt-6 pb-10">
@@ -278,9 +291,30 @@ const CreateCharacter: React.FC = () => {
 								</div>
 							</div>
 						</div>
-					)}
 
-					<button type="submit" className="bg-blue-500 text-white p-2 ">Submit</button>
+					)}
+					<div className="flex justify-center gap-4">
+						<button
+							type="submit"
+							className="mb-2 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+						>
+							Create Character
+						</button>
+						<button
+							type="button"
+							onClick={() => window.location.href = '/dashboard'}
+							className="mb-2 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm rounded-md text-white bg-red-600 hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-900-500"
+						>
+							Cancel
+						</button>
+					</div>
+
+
+					{errorMessage && (
+						<div className="mt-4 text-center">
+							<p className="text-lg text-red-500">{errorMessage}</p>
+						</div>
+					)}
 				</form>
 			</div>
 		</div>

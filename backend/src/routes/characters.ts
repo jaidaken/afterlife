@@ -125,9 +125,11 @@ router.get('/characters/user/:discordId', async (req, res) => {
 router.get('/characters/:name', async (req, res) => {
   const { name } = req.params;
   try {
-    const character = await Character.findOne({ charName: name });
-    if (character) {
-      res.json(character);
+    const characterInDB = await Character.findOne({ charName: name });
+    const characterInQueue = await CharacterQueue.findOne({ charName: name });
+
+    if (characterInDB || characterInQueue) {
+      res.status(409).json({ message: 'Character name already exists' });
     } else {
       res.status(404).json({ message: 'Character not found' });
     }
