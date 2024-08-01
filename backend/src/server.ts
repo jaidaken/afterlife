@@ -63,13 +63,6 @@ importCharacters().catch(error => {
   console.error('Error during initial character import:', error);
 });
 
-//run import characters every 60 seconds
-cron.schedule('*/60 * * * * *', () => {
-  importCharacters().catch(error => {
-    console.error('Error during scheduled character import:', error);
-  });
-});
-
 mongoose.connect(MONGO_URI)
   .then(() => {
     console.log('Database connected successfully');
@@ -81,6 +74,18 @@ mongoose.connect(MONGO_URI)
     app.listen(port, '0.0.0.0', () => {
       console.log(`Server running on port ${port}`);
     });
+
+    const db = mongoose.connection;
+    const characterCollection = db.collection('characters');
+    const changeStream = characterCollection.watch();
+
+    changeStream.on('change', (change) => {
+      console.log('Change detected in characters database:');
+      importCharacters().catch(error => {
+        console.error('Error importing characters after change detected:', error);
+      });
+    });
+
   })
   .catch(error => {
     console.error('Database connection error:', error.message);
