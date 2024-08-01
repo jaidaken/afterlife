@@ -6,7 +6,8 @@ import passport from 'passport';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import MongoStore from 'connect-mongo';
-import cron from 'node-cron';
+import https from 'https';
+import fs from 'fs';
 import { authRouter } from './routes/auth';
 import characterRouter from './routes/characters';
 import usersRouter from './routes/users';
@@ -17,11 +18,10 @@ import { importCharacters } from './utils/importCharacters';
 
 dotenv.config();
 
-const { MONGO_URI, SESSION_SECRET, PORT } = process.env;
-if (!MONGO_URI || !SESSION_SECRET || !PORT) {
+const { MONGO_URI, SESSION_SECRET, PORT, SSL_KEY_PATH, SSL_CERT_PATH } = process.env;
+if (!MONGO_URI || !SESSION_SECRET || !PORT || !SSL_KEY_PATH || !SSL_CERT_PATH ) {
   throw new Error('Missing required environment variables');
 }
-
 const app = express();
 
 app.use(cors({ origin: process.env.HOST_URL, credentials: true }));
@@ -71,8 +71,14 @@ mongoose.connect(MONGO_URI)
       console.error(`Invalid port number: ${PORT}`);
       process.exit(1);
     }
-    app.listen(port, '0.0.0.0', () => {
-      console.log(`Server running on port ${port}`);
+
+    const options = {
+      key: fs.readFileSync(SSL_KEY_PATH),
+      cert: fs.readFileSync(SSL_CERT_PATH),
+    };
+
+    https.createServer(options, app).listen(port, '49.13.213.64', () => {
+      console.log(`Server running on https://49.13.213.64:${port}`);
     });
 
     const db = mongoose.connection;
