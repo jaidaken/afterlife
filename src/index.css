@@ -71,6 +71,6 @@ body::-webkit-scrollbar {
 	background-color: rgba(14, 14, 14, 0.5);
 	padding: 3px 0 3px 0;
 }
-.hide-track .track-vertical {
-  display: none;
+.hide-track {
+	background-color: rgba(14, 14, 14, 0);
 }
