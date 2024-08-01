@@ -8,44 +8,43 @@ import { decryptPassword } from '../utils/password';
 import Scrollbar from '../components/CustomScrollbar';
 
 const getAvatarUrl = (charName: string): string => {
-	return `/avatars/${charName}.webp` || '';
+  return `/avatars/${charName}.webp` || '';
 };
 
-const CharacterDetail: React.FC = () => {
-	const { name } = useParams();
-	const navigate = useNavigate();
-	const { user } = useAuth();
-	const [character, setCharacter] = useState<Character | null>(null);
-	const [decryptedPassword, setDecryptedPassword] = useState<string | null>(null);
+const UserCharacterDetails: React.FC = () => {
+  const { name } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [character, setCharacter] = useState<Character | null>(null);
+  const [decryptedPassword, setDecryptedPassword] = useState<string | null>(null);
 
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const response = await axios.get(`/api/characters/${name}`);
-				setCharacter(response.data);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`/api/characters/${name}`);
+        setCharacter(response.data);
 
-				// Fetch and decrypt the password
-				const encryptedPassword = response.data.password;
-				const decrypted = await decryptPassword(encryptedPassword);
-				setDecryptedPassword(decrypted);
-			} catch (error) {
-				console.error('Error fetching character data', error);
-			}
-		};
+        // Fetch and decrypt the password
+        const encryptedPassword = response.data.password;
+        const decrypted = await decryptPassword(encryptedPassword);
+        setDecryptedPassword(decrypted);
+      } catch (error) {
+        console.error('Error fetching character data', error);
+      }
+    };
 
-		fetchData();
-	}, [name]);
+    fetchData();
+  }, [name]);
 
-	const handleEdit = () => {
-		navigate(`/character/edit/${character?.charName}`);
-	};
+  const handleEdit = () => {
+    navigate(`/character/edit/${character?.charName}`);
+  };
 
-	if (!character) {
-		return <div></div>;
-	}
+  if (!character) {
+    return <div></div>;
+  }
 
-
-	return (
+  return (
 		<Scrollbar>
 			<div className="p-4 flex items-center flex-col mt-10">
 				<div className="bg-gray-800 p-6 rounded-lg text-center shadow-lg">
@@ -126,7 +125,7 @@ const CharacterDetail: React.FC = () => {
 				)}
 			</div>
 		</Scrollbar>
-	);
+  );
 };
 
-export default CharacterDetail;
+export default UserCharacterDetails;

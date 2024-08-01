@@ -10,6 +10,7 @@ const CreateCharacter: React.FC = () => {
 	const [character, setCharacter] = useState<Character>({
 		charName: '',
 		discordId: '',
+		password: '',
 		isAlive: true,
 		age: 0,
 		birthplace: '',

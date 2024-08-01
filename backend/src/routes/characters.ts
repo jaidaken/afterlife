@@ -128,42 +128,15 @@ router.get('/characters/:name', async (req, res) => {
     const characterInDB = await Character.findOne({ charName: name });
     const characterInQueue = await CharacterQueue.findOne({ charName: name });
 
-    if (characterInDB || characterInQueue) {
-      res.status(409).json({ message: 'Character name already exists' });
+    if (characterInDB) {
+      res.status(200).json(characterInDB);
+    } else if (characterInQueue) {
+      res.status(200).json(characterInQueue);
     } else {
       res.status(404).json({ message: 'Character not found' });
     }
   } catch (error) {
     res.status(500).json({ message: 'Error fetching character', error });
-  }
-});
-
-router.post('/characters/:charName/assign', async (req, res) => {
-  const { charName } = req.params;
-  const { discordId } = req.body;
-
-  if (!charName || !discordId) {
-    return res.status(400).json({ message: 'Character name and Discord ID are required' });
-  }
-
-  try {
-    const character = await Character.findOne({ charName });
-    if (!character) {
-      return res.status(404).json({ message: 'Character not found' });
-    }
-
-    const user = await User.findOne({ discordId });
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    user.characters.push(character.charName);
-    await user.save();
-
-    console.log(`Assigned character ${charName} to user ${discordId}`);
-    res.json(user);
-  } catch (error) {
-    res.status(500).json({ message: 'Error assigning character', error });
   }
 });
 

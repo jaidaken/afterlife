@@ -4,6 +4,7 @@ import { ObjectId } from 'mongodb';
 export interface Character {
 	_id?: ObjectId;
 	charName: string;
+	password: string;
 	age?: number;
 	birthplace?: string;
 	gender?: string;
