@@ -35,6 +35,7 @@ const PublicCharacterDetails: React.FC = () => {
 			<div className="p-4 flex items-center flex-col mt-10">
 				<div className="bg-gray-800 p-6 rounded-lg text-center shadow-lg">
 					<h1 className="text-3xl font-bold mb-4">{character.charName}</h1>
+					<h2 className="text-xl text-white mb-2">Public</h2>
 					<img
 						src={getAvatarUrl(character.charName)}
 						alt={`${character.charName}'s avatar`}

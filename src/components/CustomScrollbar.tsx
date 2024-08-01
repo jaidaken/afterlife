@@ -16,7 +16,6 @@ const CustomScrollbar: React.FC<CustomScrollbarProps> = ({ children }) => {
 		if (thumbVertical) {
 			const observer = new ResizeObserver(() => {
 				const height = thumbVertical.clientHeight;
-				console.log('Height of thumb-vertical:', height);
 				if (height === 0) {
 					setHideTrack(true);
 				} else {
