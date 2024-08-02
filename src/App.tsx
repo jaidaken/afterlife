@@ -13,6 +13,7 @@ import ResubmitCharacter from './pages/ResubmitCharacter';
 import Footer from './components/Footer';
 import UserCharacterDetails from './pages/UserCharacterDetails';
 import PublicCharacterDetails from './pages/PublicCharacterDetails';
+import Lore from './pages/Lore';
 import Users from './pages/Users';
 import UserDetails from './pages/UserDetails';
 import useAuth from './hooks/useAuth';
@@ -26,6 +27,7 @@ const App: React.FC = () => {
 					<NavBar />
 					<Routes>
 						<Route path="/" element={<Home />} />
+						<Route path="/lore" element={<Lore />} />
 						<Route path="/dashboard" element={<UserDashboard />} />
 						<Route path="/admin" element={<AdminDashboard />} />
 						<Route path="/users" element={<Users />} />

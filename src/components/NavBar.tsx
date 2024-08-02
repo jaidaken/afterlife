@@ -80,6 +80,9 @@ const NavBar: React.FC = () => {
 					<Link to="/" className="text-xl font-semibold text-white">
 						AfterLife RP
 					</Link>
+					<Link to="/lore" className="text-gray-300 hover:text-white transition">
+						Lore
+					</Link>
 					<Link to="/characters" className="text-gray-300 hover:text-white transition">
 						Characters
 					</Link>

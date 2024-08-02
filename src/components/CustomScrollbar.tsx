@@ -36,7 +36,7 @@ const Scrollbar: React.FC<ScrollbarProps> = ({ children }) => {
 			className='scroll-div flex-grow'
 			renderThumbVertical={props => <div {...props} className="thumb-vertical" />}
 			renderTrackVertical={props => <div {...props} className={`track-vertical ${hideTrack ? 'hide-track' : ''}`} />}
-			renderView={props => <div {...props} className="scroll-content" />}
+			renderView={props => <div {...props} className="scroll-content flex justify-center items-start h-full" />}
 		>
 			{children}
 		</Scrollbars>
