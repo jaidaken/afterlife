@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import axios from 'axios';
 import Scrollbar from '../components/CustomScrollbar';
+import { Character } from '../models/Character';
+import { User } from '../models/User';
 
-interface Character {
-	_id: string;
-	charName: string;
-	profession: string;
-	isAlive: boolean;
-	zombieKills: number;
-	survivorKills: number;
-	hoursSurvived: number;
+interface RejectedCharacter {
+	charName: String,
+	discordId: String,
+	age: Number,
+	birthplace: String,
+	gender: String,
+	appearance: String,
+	personality: String,
+	backstory: String,
+	rejectionMessage: String,
 }
 
 const getAvatarUrl = (charName: string): string => {
@@ -19,9 +23,11 @@ const getAvatarUrl = (charName: string): string => {
 };
 
 const UserDashboard: React.FC = () => {
-	const { user } = useAuth();
+	const { user } = useAuth() as { user: User | null };
 	const [characters, setCharacters] = useState<Character[]>([]);
 	const [error, setError] = useState<string | null>(null);
+	const [rejectedCharacters, setRejectedCharacters] = useState<RejectedCharacter[]>([]);
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		if (user) {
@@ -41,6 +47,25 @@ const UserDashboard: React.FC = () => {
 		}
 	}, [user]);
 
+	useEffect(() => {
+		if (user) {
+			const fetchRejectedCharacters = async () => {
+				try {
+					const response = await axios.get(`/api/rejected-characters/${user?.discordId}`);
+					setRejectedCharacters(response.data);
+				} catch (error) {
+					console.error('Error fetching rejected characters:', error);
+				}
+			};
+
+			fetchRejectedCharacters();
+		}
+	}, [user]);
+
+	const handleResubmitCharacter = (character: RejectedCharacter) => {
+		navigate('/resubmit-character', { state: { character } });
+	};
+
 	if (!user) {
 		return <h1 className="text-gray-300">Please log in to view your dashboard.</h1>;
 	}
@@ -57,7 +82,7 @@ const UserDashboard: React.FC = () => {
 						{characters.length > 0 ? (
 							<div className="flex flex-wrap gap-4 justify-center flex-grow flex-shrink">
 								{characters.map((character) => (
-									<Link key={character._id} to={`/character/${character.charName}`} className="bg-gray-700 hover:bg-gray-600 p-4 rounded-lg text-center transition">
+									<Link key={String(character.discordId)} to={`/character/${character.charName}`} className="bg-gray-700 hover:bg-gray-600 p-4 rounded-lg text-center transition">
 										<div className="flex flex-col items-center">
 											<img
 												src={getAvatarUrl(character.charName)}
@@ -74,11 +99,34 @@ const UserDashboard: React.FC = () => {
 							<p>You have no characters.</p>
 						)}
 					</div>
-					<div className="mt-4">
+					<div className="my-8">
 						<Link to="/create-character" className="bg-blue-500 text-white py-2 px-4 rounded">
 							Create New Character
 						</Link>
 					</div>
+
+					<div className="w-auto mx-auto">
+					<h2 className="text-2xl mb-4 text-white flex justify-center">Rejected Characters</h2>
+						<ul>
+							{rejectedCharacters.map((character) => (
+								<li key={String(character.discordId)} className="mb-4 p-4 bg-gray-800 rounded-lg shadow-lg">
+									<div className="flex justify-center items-center gap-6">
+										<div>
+											<p className="text-center"><strong>Name:</strong> {character.charName}</p>
+											<p className="text-center"><strong>Rejection Reason:</strong> {character.rejectionMessage}</p>
+										</div>
+										<button
+											onClick={() => handleResubmitCharacter(character)}
+											className="bg-blue-500 text-white py-1 px-2 rounded"
+										>
+											Resubmit
+										</button>
+									</div>
+								</li>
+							))}
+						</ul>
+					</div>
+
 				</div>
 			</div>
 		</Scrollbar>

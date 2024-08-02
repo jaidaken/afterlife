@@ -15,7 +15,7 @@ const ensureDirectoryExists = async (dir: string) => {
   }
 };
 
-export const convertToWebpAndCrop = async (fileBuffer: Buffer, charName: string): Promise<Buffer> => {
+export const convertToWebpAndCrop = async (fileBuffer: Buffer, charName: string): Promise<string> => {
   const inputFileName = `/tmp/${uuidv4()}.png`;
   const outputDir = path.resolve(__dirname, '../../../public/avatars');
   const outputFileName = path.join(outputDir, `${charName}.webp`);
@@ -43,10 +43,8 @@ export const convertToWebpAndCrop = async (fileBuffer: Buffer, charName: string)
     await execPromise(command);
     console.log(`Output file created: ${outputFileName}`);
 
-    // Read the converted file back into a buffer
-    const webpBuffer = await readFile(outputFileName);
-
-    return webpBuffer;
+    // Return the path to the saved WebP file
+    return outputFileName;
   } catch (error) {
     console.error('Error processing image', error);
     throw error;

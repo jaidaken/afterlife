@@ -1,34 +1,49 @@
-import React, { createContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useEffect, useState, useContext, ReactNode } from 'react';
 import { fetchUser, login, logout } from '../utils/authUtils';
+import { User } from '../models/User';
 
-export interface User {
-	discordId: string;
-	username: string;
-	avatar: string;
-	isAdmin: boolean;
-	characters: string[];
-}
 
-export interface AuthContextType {
+export interface AuthContextProps {
   user: User | null;
-  login: () => void;
+	setUser: React.Dispatch<React.SetStateAction<User | null>>;
+	login: () => void;
   logout: () => void;
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    const storedUser = localStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : null;
+	});
+
+	useEffect(() => {
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
+    }
+  }, [user]);
 
   useEffect(() => {
     fetchUser(setUser);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout: () => logout(setUser) }}>
+    <AuthContext.Provider value={{ user, setUser, login, logout: () => logout(setUser) }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
+
 export default AuthProvider;
+

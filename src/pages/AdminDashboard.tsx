@@ -78,6 +78,39 @@ const AdminDashboard: React.FC = () => {
 		}
 	};
 
+	const handleRejectCharacter = async (character: Character) => {
+		const rejectionMessage = prompt('Enter rejection message:');
+		if (!rejectionMessage) return;
+
+		try {
+			await axios.post(`/api/reject-character/${character.discordId}`, { rejectionMessage }, {
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			});
+			alert('Character rejected successfully!');
+			setSelectedCharacter(null);
+			const response = await axios.get('/api/character-queue');
+			setCharacterQueue(response.data);
+		} catch (error) {
+			console.error('Error rejecting character:', error);
+			alert('There was an error rejecting the character.');
+		}
+	};
+
+	const handleDeleteCharacter = async (character: Character) => {
+		try {
+			await axios.delete(`/api/character-queue/${character.charName}`);
+			alert('Character deleted successfully');
+			setSelectedCharacter(null);
+			const response = await axios.get('/api/character-queue');
+			setCharacterQueue(response.data);
+		} catch (error) {
+			console.error('Error deleting character:', error);
+			alert('Failed to delete character');
+		}
+	};
+
 	const handleOpenModal = (character: Character) => {
 		setSelectedCharacter(character);
 	};
@@ -137,36 +170,53 @@ const AdminDashboard: React.FC = () => {
 				)}
 
 				{selectedCharacter && (
-					<div className="fixed p-6 inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-						<div className="bg-gray-800 text-gray-300 p-8 rounded-lg shadow-lg w-full max-w-3xl max-h-full overflow-y-auto">
-							<div className="flex flex-col items-center">
-								<h2 className="text-2xl mb-4">{selectedCharacter.charName}</h2>
-								<img
-									src={getAvatarUrl(selectedCharacter.charName)}
-									alt={`${selectedCharacter.charName}'s avatar`}
-									className="w-64 h-64 mb-4"
-								/>
-							</div>
-							<p className="text-center leading-7"><strong>Age</strong><br /> {selectedCharacter.age}</p>
-							<p className="text-center leading-7"><strong>Birthplace</strong><br /> {selectedCharacter.birthplace}</p>
-							<p className="text-center leading-7"><strong>Pronouns</strong><br /> {selectedCharacter.gender}</p>
-							<p className="text-center leading-7"><strong>Appearance</strong><br /> {selectedCharacter.appearance}</p>
-							<p className="text-center leading-7"><strong>Personality</strong><br /> {selectedCharacter.personality}</p>
-							<p className="text-center leading-7"><strong>Backstory</strong><br /> {selectedCharacter.backstory}</p>
-							<div className="flex justify-end mt-4">
-								<button
-									onClick={() => handleAcceptCharacter(selectedCharacter)}
-									className="bg-green-500 text-white py-2 px-4 rounded mr-2"
-								>
-									Accept
-								</button>
-								<button
-									onClick={handleCloseModal}
-									className="bg-red-500 text-white py-2 px-4 rounded"
-								>
-									Close
-								</button>
-							</div>
+					<div className="fixed p-6 inset-0 bg-black bg-opacity-50 flex items-center justify-center pt-24 pb-32">
+						<div className="bg-gray-800 text-gray-300 rounded-lg shadow-lg w-full max-w-3/4 max-h-full h-screen overflow-y-auto">
+							<Scrollbar>
+								<div className='p-8 flex flex-col'>
+									<div className="tester flex flex-col items-center">
+										<h2 className="text-2xl mb-4">{selectedCharacter.charName}</h2>
+										<img
+											src={getAvatarUrl(selectedCharacter.charName)}
+											alt={`${selectedCharacter.charName}'s avatar`}
+											className="w-64 h-64 mb-4"
+										/>
+										{selectedCharacter.rejectionMessage && (
+											<>
+												<h3 className="text-1xl text-red-500">Previous Rejection reason:</h3>
+												<h3 className="text-1xl text-red-500 pb-4">{selectedCharacter.rejectionMessage}</h3>
+											</>
+										)}
+									</div>
+									<p className="text-center leading-7 break-words whitespace-normal"><strong>Age</strong><br /> {selectedCharacter.age}</p>
+									<p className="text-center leading-7 break-words whitespace-normal"><strong>Birthplace</strong><br /> {selectedCharacter.birthplace}</p>
+									<p className="text-center leading-7 break-words whitespace-normal"><strong>Pronouns</strong><br /> {selectedCharacter.gender}</p>
+									<p className="text-center leading-7 break-words whitespace-normal"><strong>Appearance</strong><br /> {selectedCharacter.appearance}</p>
+									<p className="text-center leading-7 break-words whitespace-normal"><strong>Personality</strong><br /> {selectedCharacter.personality}</p>
+									<p className="text-center leading-7 break-words whitespace-normal"><strong>Backstory</strong><br /> {selectedCharacter.backstory}</p>
+									<div className="flex mx-auto mt-4 gap-2">
+										<button
+											onClick={() => handleAcceptCharacter(selectedCharacter)}
+											className="bg-green-500 text-white py-2 px-4 rounded"
+										>
+											Accept
+										</button>
+										<button
+											onClick={() => handleRejectCharacter(selectedCharacter)}
+											className="bg-red-500 text-white py-2 px-4 rounded"
+										>
+											Reject
+										</button>
+										<button onClick={() => handleDeleteCharacter(selectedCharacter)} className="bg-red-900 text-white py-2 px-4 rounded">Delete</button>
+										<button
+											onClick={handleCloseModal}
+											className="bg-blue-500 text-white py-2 px-4 rounded"
+										>
+											Close
+										</button>
+									</div>
+								</div>
+							</Scrollbar>
 						</div>
 					</div>
 				)}

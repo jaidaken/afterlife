@@ -12,6 +12,7 @@ export interface ICharacter extends Document {
 	appearance?: string;
 	personality?: string;
 	backstory?: string;
+	rejectionMessage?: string;
 	profession: string;
 	username: string;
 	steamID: string;
@@ -84,6 +85,7 @@ const CharacterSchema = new Schema<ICharacter>({
 	appearance: { type: String, required: false },
 	personality: { type: String, required: false },
 	backstory: { type: String, required: false },
+	rejectionMessage: { type: String, required: false },
   profession: { type: String, required: false },
   username: { type: String, required: false },
 	steamID: { type: String, required: false },

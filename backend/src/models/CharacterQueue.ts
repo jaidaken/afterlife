@@ -9,6 +9,7 @@ const CharacterQueueSchema = new mongoose.Schema({
 	appearance: { type: String, required: true },
 	personality: { type: String, required: true },
 	backstory: { type: String, required: true },
+	rejectionMessage: { type: String, required: false },
 });
 
 const CharacterQueue = mongoose.model('CharacterQueue', CharacterQueueSchema);

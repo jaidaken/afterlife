@@ -11,6 +11,7 @@ export interface Character {
 	appearance?: string;
 	personality?: string;
 	backstory?: string;
+	rejectionMessage?: string;
 	profession?: string;
 	username?: string;
 	steamID?: string;

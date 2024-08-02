@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import useAuth from '../hooks/useAuth';
 import { Character } from '../models/Character';
 import AvatarEditor from 'react-avatar-editor';
+import { useLocation } from 'react-router-dom';
 import Scrollbar from '../components/CustomScrollbar';
 
-const CreateCharacter: React.FC = () => {
+const ResubmitCharacter: React.FC = () => {
 	const { user } = useAuth();
-	const [character, setCharacter] = useState<Character>({
+	const location = useLocation();
+	const initialCharacter = location.state?.character as Character || {
 		charName: '',
 		discordId: '',
 		password: '',
@@ -18,7 +20,16 @@ const CreateCharacter: React.FC = () => {
 		appearance: '',
 		personality: '',
 		backstory: '',
-	});
+		rejectionMessage: '',
+	};
+
+	const [character, setCharacter] = useState<Character>(initialCharacter);
+
+	useEffect(() => {
+		if (location.state?.character) {
+			setCharacter(location.state.character);
+		}
+	}, [location.state]);
 
 	const [avatarFile, setAvatarFile] = useState<File | null>(null);
 	const [zoom, setZoom] = useState(1);
@@ -27,7 +38,7 @@ const CreateCharacter: React.FC = () => {
 	const [showCropper, setShowCropper] = useState<boolean>(false);
 	const [errorMessage, setErrorMessage] = useState('');
 
-	const editorRef = React.useRef<AvatarEditor>(null);
+	const editorRef = useRef<AvatarEditor>(null);
 
 	const capitalizeName = (name: string): string => {
 		return name
@@ -35,6 +46,25 @@ const CreateCharacter: React.FC = () => {
 			.map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
 			.join(' ');
 	};
+
+	    // Fetch the avatar image when the component mounts
+			useEffect(() => {
+        const fetchAvatar = async () => {
+            try {
+                const response = await fetch(`/public/avatars/${character.charName}.webp`);
+                if (response.ok) {
+                    const imageUrl = URL.createObjectURL(await response.blob());
+                    setCroppedImage(imageUrl);
+                }
+            } catch (error) {
+                console.error('Error fetching avatar image', error);
+            }
+        };
+
+        if (character.charName) {
+            fetchAvatar();
+        }
+    }, [character.charName]);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
 		const { name, value } = e.target;
@@ -93,21 +123,17 @@ const CreateCharacter: React.FC = () => {
 
 		const capitalizedCharName = capitalizeName(character.charName);
 
-    try {
+		try {
 			// Check if character name already exists
 			await axios.get(`/api/characters/${capitalizedCharName}`);
 			setErrorMessage('Character name already exists. Please choose a different name.');
 			return;
-	} catch (error: any) {
-			if (error.response && error.response.status === 404) {
-					// Suppress 404 error logging
-					console.log('Character name not found, proceeding with creation.');
-			} else {
-					setErrorMessage('An error occurred while checking the character name.');
-					return;
+		} catch (error: any) {
+			if (error.response && error.response.status !== 404) {
+				setErrorMessage('An error occurred while checking the character name.');
+				return;
 			}
-	}
-
+		}
 		try {
 			const formData = new FormData();
 			if (croppedImage) {
@@ -126,6 +152,7 @@ const CreateCharacter: React.FC = () => {
 				...character,
 				charName: capitalizedCharName,
 				discordId: user?.discordId,
+				rejectionMessage: character.rejectionMessage,
 			};
 
 			await axios.post('/api/character-queue', payload, {
@@ -133,6 +160,9 @@ const CreateCharacter: React.FC = () => {
 					'Content-Type': 'application/json',
 				},
 			});
+
+			// Delete character from rejectedCharacter database
+			await axios.delete(`/api/rejected-characters/${capitalizedCharName}`);
 
 			alert('Character creation successful, sent to queue for admin approval!');
 			window.location.href = '/dashboard';
@@ -150,10 +180,12 @@ const CreateCharacter: React.FC = () => {
 		<Scrollbar>
 			<div className="flex justify-center mt-6 pb-10">
 				<div className="container mx-auto p-4 bg-gray-900 -lg shadow-lg w-full h-full md:w-3/4 lg:w-1/2">
-					<h1 className="text-2xl mb-4">Create Character</h1>
+					<h1 className="text-2xl mb-4">Resubmit Character</h1>
 					<form onSubmit={handleSubmit}>
 
 						<div className="mb-4 flex flex-col justify-center items-center">
+						<h3 className='text-1xl text-red-600'>Rejection Reason:</h3>
+						<h3 className='text-1xl text-red-600 pb-4'>{character.rejectionMessage}</h3>
 							<label className="block text-white mb-1">Avatar</label>
 							<div className='h-1/2 w-1/2'>
 								{croppedImage && (
@@ -345,4 +377,4 @@ const CreateCharacter: React.FC = () => {
 	);
 };
 
-export default CreateCharacter;
+export default ResubmitCharacter;

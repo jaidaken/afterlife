@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars-2';
 
-interface CustomScrollbarProps {
+interface ScrollbarProps {
 	children: React.ReactNode;
 	style?: React.CSSProperties;
 }
 
-const CustomScrollbar: React.FC<CustomScrollbarProps> = ({ children }) => {
+const Scrollbar: React.FC<ScrollbarProps> = ({ children }) => {
 	const [hideTrack, setHideTrack] = useState(false);
 
 	useEffect(() => {
@@ -43,4 +43,4 @@ const CustomScrollbar: React.FC<CustomScrollbarProps> = ({ children }) => {
 	);
 };
 
-export default CustomScrollbar;
+export default Scrollbar;

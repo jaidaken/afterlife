@@ -12,8 +12,8 @@ router.post('/convert', upload.single('avatar'), async (req, res) => {
       return res.status(400).send('No file uploaded');
     }
 
-    const webpBuffer = await convertToWebpAndCrop(req.file.buffer, req.body.charName);
-    res.send(webpBuffer.toString('base64'));
+    const outputFileName = await convertToWebpAndCrop(req.file.buffer, req.body.charName);
+    res.send({ message: 'Image converted and saved successfully', filePath: outputFileName });
   } catch (error) {
     console.error('Error processing image', error);
     res.status(500).send('Error processing image');
