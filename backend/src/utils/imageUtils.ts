@@ -1,6 +1,6 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { writeFile, unlink, readFile, access, mkdir } from 'fs/promises';
+import { writeFile, unlink, access, mkdir } from 'fs/promises';
 import { v4 as uuidv4 } from 'uuid';
 import { constants } from 'fs';
 import path from 'path';
