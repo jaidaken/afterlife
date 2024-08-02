@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useAuth from '../hooks/useAuth';
 import { User } from '../models/User';
@@ -11,15 +12,26 @@ const getAvatarUrl = (charName: string): string => {
 	return `/avatars/${charName}.webp` || '';
 };
 
+
+
 const AdminDashboard: React.FC = () => {
 	const { user } = useAuth();
+	const navigate = useNavigate();
 
-	const isAdmin = (user: User) => user && user.isAdmin;
+	const isAdmin = (user: User) => user && user.role === 'admin';
+	const isModerator = (user: User) => user && user.role === 'moderator';
+	const isApplicationTeam = (user: User) => user && user.role === 'applicationTeam';
 
 	const [isCommandSenderModalOpen, setIsCommandSenderModalOpen] = useState(false);
 	const [characterQueue, setCharacterQueue] = useState<any[]>([]);
 	const [users, setUsers] = useState<User[]>([]);
 	const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
+
+	useEffect(() => {
+		if (user && user.role === 'user') {
+			navigate('/dashboard');
+		}
+	}, [user, navigate]);
 
 	const handleImportCharacters = async () => {
 		try {
@@ -111,6 +123,14 @@ const AdminDashboard: React.FC = () => {
 		}
 	};
 
+	const getDashboardTitle = (user: User) => {
+		if (isAdmin(user)) return 'Admin Dashboard';
+		if (isModerator(user)) return 'Moderator Dashboard';
+		if (isApplicationTeam(user)) return 'Application Team Dashboard';
+		return 'Dashboard';
+	};
+
+
 	const handleOpenModal = (character: Character) => {
 		setSelectedCharacter(character);
 	};
@@ -123,7 +143,7 @@ const AdminDashboard: React.FC = () => {
 		return <h1 className="text-gray-300">Please log in to view the admin dashboard.</h1>;
 	}
 
-	if (!isAdmin(user)) {
+	if (!isAdmin(user) && !isModerator(user) && !isApplicationTeam(user)) {
 		return <h1 className="text-gray-300">You do not have access to the admin dashboard.</h1>;
 	}
 
@@ -131,25 +151,54 @@ const AdminDashboard: React.FC = () => {
 		<Scrollbar>
 			<div className="text-gray-300 flex items-center flex-col mt-10">
 				<div className="flex justify-center items-center flex-col">
-					<h1 className="text-3xl font-bold mb-4">Admin Dashboard</h1>
-					<p className="mb-4">This is the admin dashboard, visible only to admin users.</p>
+					<h1 className="text-3xl font-bold mb-4">{getDashboardTitle(user)}</h1>
 
-					<div className="flex flex-col gap-4">
-						<button
-							onClick={handleImportCharacters}
-							className="bg-green-500 text-white py-2 px-4 rounded"
-						>
-							Import Characters
-						</button>
+					{(isAdmin(user) || isModerator(user)) && (
+						<div className="flex flex-col gap-4">
+							<button
+								onClick={handleImportCharacters}
+								className="bg-green-500 text-white py-2 px-4 rounded"
+							>
+								Import Characters
+							</button>
 
-						<button
-							onClick={() => setIsCommandSenderModalOpen(true)}
-							className="bg-purple-500 text-white py-2 px-4 rounded"
-						>
-							Open Command Sender
-						</button>
-					</div>
+							{isAdmin(user) && (
+								<button
+									onClick={() => setIsCommandSenderModalOpen(true)}
+									className="bg-purple-500 text-white py-2 px-4 rounded"
+								>
+									Open Command Sender
+								</button>
+							)}
+						</div>
+					)}
 				</div>
+
+				{(isAdmin(user) || isModerator(user) || isApplicationTeam(user)) && (
+					<div className="mt-8 flex flex-col justify-center items-center pb-10 ">
+						<h2 className="text-2xl mb-4">Character Queue</h2>
+						<div className="w-full mx-auto">
+							<ul>
+								{characterQueue.map((character) => (
+									<li key={character._id} className="mb-4 p-6 w-full bg-gray-800 rounded-lg shadow-lg">
+										<div className="flex justify-between items-center gap-4">
+											<div>
+												<p className="text-center"><strong>Name:</strong> {character.charName}</p>
+												<p className="text-center"><strong>Username:</strong> {getUsernameByDiscordId(character.discordId)}</p>
+											</div>
+											<button
+												onClick={() => handleOpenModal(character)}
+												className="bg-blue-500 text-white py-2 px-4 rounded"
+											>
+												View Details
+											</button>
+										</div>
+									</li>
+								))}
+							</ul>
+						</div>
+					</div>
+				)}
 
 				{isCommandSenderModalOpen && (
 					<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -221,29 +270,7 @@ const AdminDashboard: React.FC = () => {
 					</div>
 				)}
 
-				<div className="mt-8 flex flex-col justify-center items-center pb-10 ">
-					<h2 className="text-2xl mb-4">Character Queue</h2>
-					<div className="w-full mx-auto">
-						<ul>
-							{characterQueue.map((character) => (
-								<li key={character._id} className="mb-4 p-6 w-full bg-gray-800 rounded-lg shadow-lg">
-									<div className="flex justify-between items-center gap-4">
-										<div>
-											<p className="text-center"><strong>Name:</strong> {character.charName}</p>
-											<p className="text-center"><strong>Username:</strong> {getUsernameByDiscordId(character.discordId)}</p>
-										</div>
-										<button
-											onClick={() => handleOpenModal(character)}
-											className="bg-blue-500 text-white py-2 px-4 rounded"
-										>
-											View Details
-										</button>
-									</div>
-								</li>
-							))}
-						</ul>
-					</div>
-				</div>
+
 			</div>
 		</Scrollbar>
 	);

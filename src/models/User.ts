@@ -2,6 +2,7 @@ export interface User {
   discordId: string;
   username: string;
   avatar: string;
-  isAdmin: boolean;
   characters: string[];
+  isMember: boolean;
+  role: 'user' | 'admin' | 'moderator' | 'applicationTeam';
 }

@@ -33,38 +33,45 @@ const NavBar: React.FC = () => {
 		fetchUserData();
 	}, [user]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIsShaking(true);
-      setTimeout(() => setIsShaking(false), 800);
+	useEffect(() => {
+		const interval = setInterval(() => {
+			setIsShaking(true);
+			setTimeout(() => setIsShaking(false), 800);
 
-      if (buttonRef.current) {
-        const rect = buttonRef.current.getBoundingClientRect();
-        confetti({
-          particleCount: 20,
-          spread: 50,
-          angle: 180,
-          origin: {
-            x: rect.left / window.innerWidth,
-            y: (rect.top + rect.height / 2) / window.innerHeight,
-          },
-          decay: 0.9,
-        });
-        confetti({
-          particleCount: 20,
-          spread: 50,
-          angle: 0,
-          origin: {
-            x: rect.right / window.innerWidth,
-            y: (rect.top + rect.height / 2) / window.innerHeight,
-          },
-          decay: 0.9,
-        });
-      }
-    }, 10000);
+			if (buttonRef.current) {
+				const rect = buttonRef.current.getBoundingClientRect();
+				confetti({
+					particleCount: 20,
+					spread: 50,
+					angle: 180,
+					origin: {
+						x: rect.left / window.innerWidth,
+						y: (rect.top + rect.height / 2) / window.innerHeight,
+					},
+					decay: 0.9,
+				});
+				confetti({
+					particleCount: 20,
+					spread: 50,
+					angle: 0,
+					origin: {
+						x: rect.right / window.innerWidth,
+						y: (rect.top + rect.height / 2) / window.innerHeight,
+					},
+					decay: 0.9,
+				});
+			}
+		}, 10000);
 
 		return () => clearInterval(interval);
 	}, []);
+
+	const getDashboardTitle = (user: { role: string }) => {
+		if (user.role === 'admin') return 'Admin Dashboard';
+		if (user.role === 'moderator') return 'Moderator Dashboard';
+		if (user.role === 'applicationTeam') return 'Application Team Dashboard';
+		return 'Dashboard';
+};
 
 	return (
 		<nav className="bg-gray-900 px-4 py-2 shadow-md sticky top-0 w-full z-50">
@@ -81,9 +88,9 @@ const NavBar: React.FC = () => {
 							<Link to="/dashboard" className="text-gray-300 hover:text-white transition">
 								User Dashboard
 							</Link>
-							{user.isAdmin && (
+							{(user.role === 'admin' || user.role === 'moderator' || user.role === 'applicationTeam') && (
 								<Link to="/admin" className="text-gray-300 hover:text-white transition">
-									Admin Dashboard
+									{getDashboardTitle(user)}
 								</Link>
 							)}
 						</>

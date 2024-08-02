@@ -1,10 +1,12 @@
+// backend/src/routes/zomboid.ts
 import express from 'express';
 import { sendRconCommand } from '../utils/rconClient';
+import { isAdmin } from '../middleware/authMiddleware';
 
 const router = express.Router();
 
 // Endpoint to send commands to the Zomboid server
-router.post('/command', async (req, res) => {
+router.post('/command', isAdmin, async (req, res) => {
   const { command } = req.body;
 
   if (!command) {

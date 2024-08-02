@@ -1,23 +1,26 @@
-import mongoose, { Document, Model, Schema } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
 export interface IUser extends Document {
   discordId: string;
   username: string;
   avatar: string;
-  isAdmin: boolean;
   characters: string[];
   isMember: boolean;
+  role: 'user' | 'admin' | 'moderator' | 'applicationTeam';
 }
 
-const UserSchema = new Schema<IUser>({
-  discordId: { type: String, unique: true, required: true },
+const UserSchema = new mongoose.Schema({
+  discordId: { type: String, required: true },
   username: { type: String, required: true },
-  avatar: { type: String },
-  isAdmin: { type: Boolean, default: false },
-  characters: [{ type: String }],
-  isMember: { type: Boolean, default: false }
+  avatar: { type: String, required: true },
+  characters: { type: [String], default: [] },
+  isMember: { type: Boolean, default: true },
+  role: { type: String, enum: ['user', 'admin', 'moderator', 'applicationTeam'], default: 'user', required: true },
 });
 
-const User: Model<IUser> = mongoose.model<IUser>('User', UserSchema);
+// Add sorting by discordId
+UserSchema.index({ discordId: 1 });
+
+const User = mongoose.model<IUser>('User', UserSchema);
 
 export default User;
