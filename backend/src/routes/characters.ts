@@ -4,10 +4,14 @@ import Character from '../models/Character';
 import User from '../models/User';
 import CharacterQueue from '../models/CharacterQueue';
 import { encryptPassword } from '../utils/passwordUtils';
+import { isAdmin, isModerator, isApplicationTeam } from '../middleware/authMiddleware';
+import RejectedCharacter from '../models/RejectedCharacter';
 
 const router = express.Router();
 
-router.post('/characters/import', async (req, res) => {
+//characters
+
+router.post('/characters/import', isAdmin, async (req, res) => {
   try {
     const characters = await getAllCharacters();
     const savedCharacters = await Promise.all(
@@ -27,93 +31,6 @@ router.post('/characters/import', async (req, res) => {
     res.json(savedCharacters.filter(char => char !== null));
   } catch (error) {
     res.status(500).json({ message: 'Error importing characters', error });
-  }
-});
-
-router.post('/character-queue', async (req, res) => {
-  const { charName, discordId, age, birthplace, gender, appearance, personality, backstory, rejectionMessage } = req.body;
-
-  if (!charName || !discordId || !age || !birthplace || !gender || !appearance || !personality || !backstory) {
-    return res.status(400).json({ message: 'All fields are required' });
-  }
-
-  try {
-    const newCharacter = new CharacterQueue({
-      charName,
-      discordId,
-      age,
-      birthplace,
-      gender,
-      appearance,
-      personality,
-			backstory,
-			rejectionMessage
-    });
-
-    const savedCharacter = await newCharacter.save();
-    res.status(201).json(savedCharacter);
-  } catch (error) {
-    res.status(500).json({ message: 'Error adding character to queue', error });
-  }
-});
-
-router.get('/character-queue', async (req, res) => {
-  try {
-    const characterQueue = await CharacterQueue.find();
-    res.json(characterQueue);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching character queue', error });
-  }
-});
-
-router.post('/accept-character/:discordId', async (req, res) => {
-  const { discordId } = req.params;
-  const { password } = req.body;
-
-  try {
-    const characterQueueItem = await CharacterQueue.findOne({ discordId });
-    if (!characterQueueItem) {
-      return res.status(404).json({ message: 'Character not found in queue' });
-    }
-
-    // Encrypt the password
-    const encryptedPassword = await encryptPassword(password);
-
-    const newCharacter = new Character({
-			charName: characterQueueItem.charName,
-			discordId: characterQueueItem.discordId,
-			age: characterQueueItem.age,
-			birthplace: characterQueueItem.birthplace,
-			gender: characterQueueItem.gender,
-      appearance: characterQueueItem.appearance,
-      personality: characterQueueItem.personality,
-      backstory: characterQueueItem.backstory,
-			password: encryptedPassword,
-    });
-
-    await newCharacter.save();
-    await CharacterQueue.findOneAndDelete({ discordId });
-
-    res.status(201).json(newCharacter);
-  } catch (error) {
-    console.error('Error accepting character:', error);
-    res.status(500).json({ message: 'Error accepting character', error });
-  }
-});
-
-router.delete('/character-queue/:charName', async (req, res) => {
-  try {
-    const { charName } = req.params;
-    const deletedCharacter = await CharacterQueue.findOneAndDelete({ charName });
-
-    if (!deletedCharacter) {
-      return res.status(404).send('Character not found');
-    }
-
-    res.status(204).send();
-  } catch (error) {
-    console.error('Error deleting character from queue:', error);
-    res.status(500).send('Server error');
   }
 });
 
@@ -157,7 +74,7 @@ router.get('/characters/:name', async (req, res) => {
   }
 });
 
-router.post('/characters', async (req, res) => {
+router.post('/characters', isApplicationTeam, async (req, res) => {
   const { username, steamID, charName, profession, isAlive, zombieKills, survivorKills, hoursSurvived } = req.body;
 
   if (!charName) {
@@ -183,9 +100,100 @@ router.post('/characters', async (req, res) => {
   }
 });
 
-import RejectedCharacter from '../models/RejectedCharacter';
+//character queue
 
-router.post('/reject-character/:discordId', async (req, res) => {
+router.post('/character-queue', isApplicationTeam, async (req, res) => {
+  const { charName, discordId, age, birthplace, gender, appearance, personality, backstory, rejectionMessage } = req.body;
+
+  if (!charName || !discordId || !age || !birthplace || !gender || !appearance || !personality || !backstory) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  try {
+    const newCharacter = new CharacterQueue({
+      charName,
+      discordId,
+      age,
+      birthplace,
+      gender,
+      appearance,
+      personality,
+			backstory,
+			rejectionMessage
+    });
+
+    const savedCharacter = await newCharacter.save();
+    res.status(201).json(savedCharacter);
+  } catch (error) {
+    res.status(500).json({ message: 'Error adding character to queue', error });
+  }
+});
+
+router.get('/character-queue', isApplicationTeam, async (req, res) => {
+  try {
+    const characterQueue = await CharacterQueue.find();
+    res.json(characterQueue);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching character queue', error });
+  }
+});
+
+router.post('/accept-character/:discordId', isApplicationTeam, async (req, res) => {
+  const { discordId } = req.params;
+  const { password } = req.body;
+
+  try {
+    const characterQueueItem = await CharacterQueue.findOne({ discordId });
+    if (!characterQueueItem) {
+      return res.status(404).json({ message: 'Character not found in queue' });
+    }
+
+    // Encrypt the password
+    const encryptedPassword = await encryptPassword(password);
+
+    const newCharacter = new Character({
+			charName: characterQueueItem.charName,
+			discordId: characterQueueItem.discordId,
+			age: characterQueueItem.age,
+			birthplace: characterQueueItem.birthplace,
+			gender: characterQueueItem.gender,
+      appearance: characterQueueItem.appearance,
+      personality: characterQueueItem.personality,
+      backstory: characterQueueItem.backstory,
+			password: encryptedPassword,
+    });
+
+    await newCharacter.save();
+    await CharacterQueue.findOneAndDelete({ discordId });
+
+    res.status(201).json(newCharacter);
+  } catch (error) {
+    console.error('Error accepting character:', error);
+    res.status(500).json({ message: 'Error accepting character', error });
+  }
+});
+
+router.delete('/character-queue/:charName', isApplicationTeam, async (req, res) => {
+  try {
+    const { charName } = req.params;
+    const deletedCharacter = await CharacterQueue.findOneAndDelete({ charName });
+
+    if (!deletedCharacter) {
+      return res.status(404).send('Character not found');
+    }
+
+    res.status(204).send();
+  } catch (error) {
+    console.error('Error deleting character from queue:', error);
+    res.status(500).send('Server error');
+  }
+});
+
+
+
+//reject characters
+
+router.post('/reject-character/:discordId', isApplicationTeam, async (req, res) => {
   const { discordId } = req.params;
   const { rejectionMessage } = req.body;
 
@@ -217,7 +225,7 @@ router.post('/reject-character/:discordId', async (req, res) => {
   }
 });
 
-router.get('/rejected-characters/:discordId', async (req, res) => {
+router.get('/rejected-characters/:discordId', isApplicationTeam, async (req, res) => {
   try {
     const { discordId } = req.params;
     const rejectedCharacters = await RejectedCharacter.find({ discordId });

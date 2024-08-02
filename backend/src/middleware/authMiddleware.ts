@@ -42,3 +42,19 @@ export const isAdmin = (req: Request, res: Response, next: NextFunction) => {
     res.status(403).json({ error: 'Forbidden' });
   }
 };
+
+export const isModerator = (req: Request, res: Response, next: NextFunction) => {
+  if (req.user && (req.user.role === 'admin' || req.user.role === 'moderator')) {
+    next();
+  } else {
+    res.status(403).json({ error: 'Forbidden' });
+  }
+};
+
+export const isApplicationTeam = (req: Request, res: Response, next: NextFunction) => {
+  if (req.user && (req.user.role === 'admin' || req.user.role === 'moderator' || req.user.role === 'applicationTeam')) {
+    next();
+  } else {
+    res.status(403).json({ error: 'Forbidden' });
+  }
+};

@@ -1,9 +1,10 @@
 import express from 'express';
 import { encryptPassword, decryptPassword } from '../utils/passwordUtils';
+import { isApplicationTeam } from '../middleware/authMiddleware';
 
 const router = express.Router();
 
-router.post('/encrypt-password', (req, res) => {
+router.post('/encrypt-password', isApplicationTeam, (req, res) => {
   const { password } = req.body;
   if (!password) {
     return res.status(400).json({ error: 'Password is required' });
@@ -12,7 +13,7 @@ router.post('/encrypt-password', (req, res) => {
   res.json({ encryptedPassword });
 });
 
-router.post('/decrypt-password', (req, res) => {
+router.post('/decrypt-password', isApplicationTeam, (req, res) => {
   const { encryptedPassword } = req.body;
   if (!encryptedPassword) {
     return res.status(400).json({ error: 'Encrypted password is required' });
