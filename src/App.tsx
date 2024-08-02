@@ -13,6 +13,8 @@ import ResubmitCharacter from './pages/ResubmitCharacter';
 import Footer from './components/Footer';
 import UserCharacterDetails from './pages/UserCharacterDetails';
 import PublicCharacterDetails from './pages/PublicCharacterDetails';
+import Users from './pages/Users';
+import UserDetails from './pages/UserDetails';
 import useAuth from './hooks/useAuth';
 import { Character } from './models/Character';
 
@@ -26,6 +28,8 @@ const App: React.FC = () => {
 						<Route path="/" element={<Home />} />
 						<Route path="/dashboard" element={<UserDashboard />} />
 						<Route path="/admin" element={<AdminDashboard />} />
+						<Route path="/users" element={<Users />} />
+						<Route path="/user/:discordId" element={<UserDetails />} />
 						<Route path="/characters" element={<CharactersList />} />
 						<Route path="/character/:name" element={<CharacterDetailsWrapper />} />
 						<Route path="/character/edit/:id" element={<EditCharacter />} />

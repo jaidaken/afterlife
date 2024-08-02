@@ -7,6 +7,8 @@ import { Character } from '../models/Character';
 import CommandSender from '../components/CommandSender';
 import { generateRandomPassword } from '../utils/password';
 import Scrollbar from '../components/CustomScrollbar';
+import useUsers from '../utils/getUsernameByDiscordId'; // Import the function
+
 
 const getAvatarUrl = (charName: string): string => {
 	return `/avatars/${charName}.webp` || '';
@@ -24,8 +26,8 @@ const AdminDashboard: React.FC = () => {
 
 	const [isCommandSenderModalOpen, setIsCommandSenderModalOpen] = useState(false);
 	const [characterQueue, setCharacterQueue] = useState<any[]>([]);
-	const [users, setUsers] = useState<User[]>([]);
 	const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
+	const { getUsernameByDiscordId } = useUsers();
 
 	useEffect(() => {
 		if (user && user.role === 'user') {
@@ -43,22 +45,11 @@ const AdminDashboard: React.FC = () => {
 		}
 	};
 
-	const getUsernameByDiscordId = (discordId: string) => {
-		const user = users.find((user) => user.discordId === discordId);
-		return user ? user.username : 'Unknown';
-	};
-
 	useEffect(() => {
 		axios.get('/api/character-queue').then((response) => {
 			setCharacterQueue(response.data);
 		}).catch((error) => {
 			console.error('Error fetching character queue', error);
-		});
-
-		axios.get('/api/users').then((response) => {
-			setUsers(response.data);
-		}).catch((error) => {
-			console.error('Error fetching users', error);
 		});
 	}, []);
 

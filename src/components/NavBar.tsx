@@ -71,7 +71,7 @@ const NavBar: React.FC = () => {
 		if (user.role === 'moderator') return 'Moderator Dashboard';
 		if (user.role === 'applicationTeam') return 'Application Team Dashboard';
 		return 'Dashboard';
-};
+	};
 
 	return (
 		<nav className="bg-gray-900 px-4 py-2 shadow-md sticky top-0 w-full z-50">
@@ -89,9 +89,14 @@ const NavBar: React.FC = () => {
 								User Dashboard
 							</Link>
 							{(user.role === 'admin' || user.role === 'moderator' || user.role === 'applicationTeam') && (
-								<Link to="/admin" className="text-gray-300 hover:text-white transition">
-									{getDashboardTitle(user)}
-								</Link>
+								<>
+									<Link to="/admin" className="text-gray-300 hover:text-white transition">
+										{getDashboardTitle(user)}
+									</Link>
+									<Link to="/users" className="text-gray-300 hover:text-white transition">
+										Users
+									</Link>
+								</>
 							)}
 						</>
 					)}

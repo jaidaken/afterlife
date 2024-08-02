@@ -4,6 +4,7 @@ import axios from 'axios';
 import Scrollbar from '../components/CustomScrollbar';
 import { Character } from '../models/Character';
 import SkillLevel from '../components/SkillLevel';
+import useUsers from '../utils/getUsernameByDiscordId';
 
 const getAvatarUrl = (charName: string): string => {
 	return `/avatars/${charName}.webp` || '';
@@ -12,20 +13,24 @@ const getAvatarUrl = (charName: string): string => {
 const PublicCharacterDetails: React.FC = () => {
 	const { name } = useParams();
 	const [character, setCharacter] = useState<Character | null>(null);
+	const [username, setUsername] = useState<string | null>(null);
+	const { getUsernameByDiscordId } = useUsers();
 
 	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const response = await axios.get(`/api/characters/${name}`);
-				setCharacter(response.data);
-			} catch (error) {
-				console.error('Error fetching character data', error);
-			}
-		};
+			const fetchData = async () => {
+					try {
+							const response = await axios.get(`/api/characters/${name}`);
+							setCharacter(response.data);
+							// Fetch the username by discordId
+							const fetchedUsername = getUsernameByDiscordId(response.data.discordId);
+							setUsername(fetchedUsername);
+					} catch (error) {
+							console.error('Error fetching character data', error);
+					}
+			};
 
-		fetchData();
-	}, [name]);
-
+			fetchData();
+	}, [name, getUsernameByDiscordId]);
 	if (!character) {
 		return <div></div>;
 	}
@@ -35,7 +40,7 @@ const PublicCharacterDetails: React.FC = () => {
 			<div className="p-4 flex items-center flex-col mt-10">
 				<div className="bg-gray-800 p-6 rounded-lg text-center shadow-lg">
 					<h1 className="text-3xl font-bold mb-4">{character.charName}</h1>
-					<h2 className="text-xl text-white mb-2">Public</h2>
+					{username && <p className="text-xl text-gray-400 mb-4">User: {username}</p>} {/* Display the username */}
 					<img
 						src={getAvatarUrl(character.charName)}
 						alt={`${character.charName}'s avatar`}
