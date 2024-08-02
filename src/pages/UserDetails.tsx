@@ -47,7 +47,7 @@ const UserDetail: React.FC = () => {
 					className="w-24 h-24 mb-2 mx-auto" // Added mx-auto to center the avatar
 					discriminator={user.username.split('#')[1]}
 				/>
-				<h2 className="text-xl text-white">{user.username}</h2>
+				<h2 className="text-xl text-white">{user.username.split('#')[0]}</h2>
 				<p className="text-sm text-gray-400">{`Discord ID: ${user.discordId}`}</p>
 			</div>
 			<h1 className="text-3xl font-bold mb-4">{user.username.split('#')[0]}'s Characters</h1>

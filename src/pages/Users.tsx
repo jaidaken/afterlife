@@ -35,8 +35,8 @@ const Users: React.FC = () => {
 		<Scrollbar>
 			<div className="flex justify-center mt-4 mb-14">
 				<div className="p-4 w-3/4">
-					<h1 className="text-3xl font-bold mb-4 flex justify-center">Characters</h1>
-					<div className="flex flex-wrap gap-4 justify-center flex-grow flex-shrink">
+					<h1 className="text-3xl font-bold mb-4 flex justify-center">Users</h1>
+					<div className="flex flex-row gap-4 justify-center flex-grow flex-shrink">
 						{users.map((user) => {
 							const [username, discriminator] = user.username.split('#');
 							return (
