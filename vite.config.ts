@@ -8,6 +8,8 @@ import path from 'path';
 dotenv.config();
 
 const url = process.env.VITE_SERVER_URL;
+const key = process.env.SSL_KEY_PATH;
+const cert = process.env.SSL_CERT_PATH;
 
 export default defineConfig({
   plugins: [reactRefresh()],
@@ -28,9 +30,11 @@ export default defineConfig({
       },
     },
     https: {
-      key: fs.readFileSync(path.resolve(__dirname, 'ssl/server.key')),
-      cert: fs.readFileSync(path.resolve(__dirname, 'ssl/server.cert')),
+      key: fs.readFileSync(path.resolve(__dirname, key || '')),
+      cert: fs.readFileSync(path.resolve(__dirname, cert || '')),
     },
-    port: 5173,
+    headers: {
+      'Permissions-Policy': 'compute-pressure=()',
+    },
   }
 });
