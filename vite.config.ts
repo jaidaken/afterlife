@@ -33,8 +33,5 @@ export default defineConfig({
       key: fs.readFileSync(path.resolve(__dirname, key || '')),
       cert: fs.readFileSync(path.resolve(__dirname, cert || '')),
     },
-    headers: {
-      'Permissions-Policy': 'compute-pressure=()',
-    },
   }
 });

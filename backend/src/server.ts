@@ -43,6 +43,11 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use((req, res, next) => {
+  res.removeHeader('Permissions-Policy');
+  next();
+});
+
 app.use('/auth', authRouter);
 app.use('/api', characterRouter);
 app.use('/api', usersRouter);
