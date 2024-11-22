@@ -1,5 +1,4 @@
 import React, { useLayoutEffect, useEffect, useState, useRef } from 'react';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { FaCheck } from 'react-icons/fa';
 import confetti from 'canvas-confetti';
@@ -17,21 +16,29 @@ const NavBar: React.FC = () => {
 	useLayoutEffect(() => {
 		setMember(null);
 		const fetchUserData = async () => {
-			if (user) {
-				try {
-					const response = await axios.get('/auth/me');
-					setMember(response.data.isMember);
-				} catch (error) {
-					console.error('Error fetching user data:', error);
-					setMember(false);
+				if (user) {
+						try {
+								const response = await fetch('/auth/me', {
+										credentials: 'include',
+								});
+								if (response.ok) {
+										const data = await response.json();
+										setMember(data.isMember);
+								} else {
+										console.error('Error fetching user data:', response.statusText);
+										setMember(false);
+								}
+						} catch (error) {
+								console.error('Error fetching user data:', error);
+								setMember(false);
+						}
+				} else {
+						setMember(false);
 				}
-			} else {
-				setMember(false);
-			}
 		};
 
 		fetchUserData();
-	}, [user]);
+}, [user]);
 
 	useEffect(() => {
 		const interval = setInterval(() => {

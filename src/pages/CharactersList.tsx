@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import { Character } from '../models/Character';
 import Scrollbar from '../components/CustomScrollbar';
 
@@ -14,26 +13,31 @@ const CharactersList: React.FC = () => {
 
 	useEffect(() => {
 		const fetchData = async () => {
-			try {
-				const response = await axios.get('/api/characters');
-				if (response.data && Array.isArray(response.data)) {
-					setCharacters(response.data);
-				} else {
-					console.error('Unexpected response format:', response.data);
+				try {
+						const response = await fetch('/api/characters');
+						if (response.ok) {
+								const data = await response.json();
+								if (Array.isArray(data)) {
+										setCharacters(data);
+								} else {
+										console.error('Unexpected response format:', data);
+								}
+						} else {
+								console.error('Error fetching characters:', response.statusText);
+						}
+				} catch (error) {
+						console.error('Error fetching characters', error);
+				} finally {
+						setLoading(false);
 				}
-			} catch (error) {
-				console.error('Error fetching characters', error);
-			} finally {
-				setLoading(false);
-			}
 		};
 
 		fetchData();
-	}, []);
+}, []);
 
-	if (loading) {
+if (loading) {
 		return <div className="p-4"></div>;
-	}
+}
 
 	return (
 		<Scrollbar>

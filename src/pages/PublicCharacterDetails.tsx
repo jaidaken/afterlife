@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
 import Scrollbar from '../components/CustomScrollbar';
 import { Character } from '../models/Character';
 import SkillLevel from '../components/SkillLevel';
@@ -17,20 +16,26 @@ const PublicCharacterDetails: React.FC = () => {
 	const { getUsernameByDiscordId } = useUsers();
 
 	useEffect(() => {
-			const fetchData = async () => {
-					try {
-							const response = await axios.get(`/api/characters/${name}`);
-							setCharacter(response.data);
-							// Fetch the username by discordId
-							const fetchedUsername = getUsernameByDiscordId(response.data.discordId);
-							setUsername(fetchedUsername);
-					} catch (error) {
-							console.error('Error fetching character data', error);
-					}
-			};
+    const fetchData = async () => {
+        try {
+            const response = await fetch(`/api/characters/${name}`);
+            if (response.ok) {
+                const data = await response.json();
+                setCharacter(data);
+                // Fetch the username by discordId
+                const fetchedUsername = getUsernameByDiscordId(data.discordId);
+                setUsername(fetchedUsername);
+            } else {
+                console.error('Error fetching character data:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error fetching character data', error);
+        }
+    };
 
-			fetchData();
+    fetchData();
 	}, [name, getUsernameByDiscordId]);
+
 	if (!character) {
 		return <div></div>;
 	}

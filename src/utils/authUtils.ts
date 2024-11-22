@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { Dispatch, SetStateAction } from 'react';
 import { User } from '../models/User';
 
@@ -6,8 +5,15 @@ const url = import.meta.env.VITE_HOST_URL;
 
 export const fetchUser = async (setUser: Dispatch<SetStateAction<User | null>>) => {
   try {
-    const response = await axios.get(`${url}/auth/me`, { withCredentials: true });
-    setUser(response.data);
+    const response = await fetch(`${url}/auth/me`, {
+      credentials: 'include',
+    });
+    if (response.ok) {
+      const data: User = await response.json();
+      setUser(data);
+    } else {
+      setUser(null);
+    }
   } catch (error) {
     setUser(null);
   }
@@ -19,9 +25,15 @@ export const login = () => {
 
 export const logout = async (setUser: Dispatch<SetStateAction<User | null>>) => {
   try {
-    await axios.get(`${url}/auth/logout`, { withCredentials: true });
-    setUser(null);
-    window.location.href = '/';
+    const response = await fetch(`${url}/auth/logout`, {
+      credentials: 'include',
+    });
+    if (response.ok) {
+      setUser(null);
+      window.location.href = '/';
+    } else {
+      console.error('Logout error', response.statusText);
+    }
   } catch (error) {
     console.error('Logout error', error);
   }

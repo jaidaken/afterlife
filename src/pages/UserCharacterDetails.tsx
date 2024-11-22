@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import useAuth from '../hooks/useAuth';
 import SkillLevel from '../components/SkillLevel';
 import { Character } from '../models/Character';
@@ -21,21 +20,26 @@ const UserCharacterDetails: React.FC = () => {
 
 	useEffect(() => {
 		const fetchData = async () => {
-			try {
-				const response = await axios.get(`/api/characters/${name}`);
-				setCharacter(response.data);
+				try {
+						const response = await fetch(`/api/characters/${name}`);
+						if (response.ok) {
+								const data = await response.json();
+								setCharacter(data);
 
-				// Fetch and decrypt the password
-				const encryptedPassword = response.data.password;
-				const decrypted = await decryptPassword(encryptedPassword);
-				setDecryptedPassword(decrypted);
-			} catch (error) {
-				console.error('Error fetching character data', error);
-			}
+								// Fetch and decrypt the password
+								const encryptedPassword = data.password;
+								const decrypted = await decryptPassword(encryptedPassword);
+								setDecryptedPassword(decrypted);
+						} else {
+								console.error('Error fetching character data:', response.statusText);
+						}
+				} catch (error) {
+						console.error('Error fetching character data', error);
+				}
 		};
 
 		fetchData();
-	}, [name]);
+}, [name]);
 
 	const handleEdit = () => {
 		navigate(`/character/edit/${character?.charName}`);

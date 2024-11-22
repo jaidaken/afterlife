@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+
 import useAuth from '../hooks/useAuth';
 import Scrollbar from '../components/CustomScrollbar';
 
@@ -29,39 +29,54 @@ const EditCharacter: React.FC = () => {
 	});
 
 	useEffect(() => {
-		const fetchCharacter = async () => {
-			try {
-				const response = await axios.get(`/api/characters/${id}`);
-				if (response.data.userId !== user?.discordId) {
-					navigate('/');
-				} else {
-					setCharacter(response.data);
-				}
-			} catch (error) {
-				console.error('Error fetching character data', error);
-			}
-		};
+    const fetchCharacter = async () => {
+        try {
+            const response = await fetch(`/api/characters/${id}`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.userId !== user?.discordId) {
+                    navigate('/');
+                } else {
+                    setCharacter(data);
+                }
+            } else {
+                console.error('Error fetching character data:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error fetching character data', error);
+        }
+    };
 
-		fetchCharacter();
-	}, [id, user, navigate]);
+    fetchCharacter();
+}, [id, user, navigate]);
 
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-		const { name, value } = e.target;
-		setCharacter((prevCharacter) => ({
+const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+	const { name, value } = e.target;
+	setCharacter((prevCharacter) => ({
 			...prevCharacter,
 			[name]: value,
-		}));
-	};
+	}));
+};
 
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
-		try {
-			await axios.put(`/api/characters/${id}`, character);
-			navigate(`/character/${character.charName}`);
-		} catch (error) {
+const handleSubmit = async (e: React.FormEvent) => {
+	e.preventDefault();
+	try {
+			const response = await fetch(`/api/characters/${id}`, {
+					method: 'PUT',
+					headers: {
+							'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(character),
+			});
+			if (response.ok) {
+					navigate(`/character/${character.charName}`);
+			} else {
+					console.error('Error updating character:', response.statusText);
+			}
+	} catch (error) {
 			console.error('Error updating character', error);
-		}
-	};
+	}
+};
 
 	return (
 		<Scrollbar>

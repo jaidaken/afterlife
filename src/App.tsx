@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Routes, Route, BrowserRouter as Router, useParams } from 'react-router-dom';
-import axios from 'axios';
 import Home from './pages/Home';
 import UserDashboard from './pages/UserDashboard';
 import AdminDashboard from './pages/AdminDashboard';
@@ -50,15 +49,20 @@ const CharacterDetailsWrapper: React.FC = () => {
 	const { name } = useParams();
 	const [character, setCharacter] = useState<Character | null>(null);
 
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const response = await axios.get(`/api/characters/${name}`);
-				setCharacter(response.data);
-			} catch (error) {
-				console.error('Error fetching character data', error);
-			}
-		};
+		useEffect(() => {
+			const fetchData = async () => {
+				try {
+					const response = await fetch(`/api/characters/${name}`);
+					if (response.ok) {
+						const data = await response.json();
+						setCharacter(data);
+					} else {
+						console.error('Error fetching character data:', response.statusText);
+					}
+				} catch (error) {
+					console.error('Error fetching character data', error);
+				}
+			};
 
 		fetchData();
 	}, [name]);

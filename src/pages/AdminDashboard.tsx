@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import useAuth from '../hooks/useAuth';
 import { User } from '../models/User';
 import { Character } from '../models/Character';
@@ -25,6 +24,7 @@ const AdminDashboard: React.FC = () => {
 	const isApplicationTeam = (user: User) => user && user.role === 'applicationTeam';
 
 	const [isCommandSenderModalOpen, setIsCommandSenderModalOpen] = useState(false);
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const [characterQueue, setCharacterQueue] = useState<any[]>([]);
 	const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
 	const { getUsernameByDiscordId } = useUsers();
@@ -37,82 +37,138 @@ const AdminDashboard: React.FC = () => {
 
 	const handleImportCharacters = async () => {
 		try {
-			await axios.post('/api/import-characters');
-			alert('Characters imported successfully');
+				const response = await fetch('/api/import-characters', {
+						method: 'POST',
+				});
+				if (response.ok) {
+						alert('Characters imported successfully');
+				} else {
+						console.error('Error importing characters:', response.statusText);
+						alert('Failed to import characters');
+				}
 		} catch (error) {
-			console.error('Error importing characters', error);
-			alert('Failed to import characters');
+				console.error('Error importing characters', error);
+				alert('Failed to import characters');
 		}
-	};
+};
 
-	useEffect(() => {
-		axios.get('/api/character-queue').then((response) => {
-			setCharacterQueue(response.data);
-		}).catch((error) => {
-			console.error('Error fetching character queue', error);
-		});
-	}, []);
+useEffect(() => {
+		const fetchCharacterQueue = async () => {
+				try {
+						const response = await fetch('/api/character-queue');
+						if (response.ok) {
+								const data = await response.json();
+								setCharacterQueue(data);
+						} else {
+								console.error('Error fetching character queue:', response.statusText);
+						}
+				} catch (error) {
+						console.error('Error fetching character queue', error);
+				}
+		};
 
-	const handleSendCommand = async (command: string) => {
+		fetchCharacterQueue();
+}, []);
+
+const handleSendCommand = async (command: string) => {
 		try {
-			const response = await axios.post('/api/zomboid/command', { command });
-			return response.data.output;
+				const response = await fetch('/api/zomboid/command', {
+						method: 'POST',
+						headers: {
+								'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({ command }),
+				});
+				const data = await response.json();
+				return data.output;
 		} catch (error) {
-			console.error('Error sending command', error);
-			return 'Failed to send command';
+				console.error('Error sending command', error);
+				return 'Failed to send command';
 		}
-	};
+};
 
-	const handleAcceptCharacter = async (character: Character) => {
+const handleAcceptCharacter = async (character: Character) => {
 		try {
-			const password = generateRandomPassword();
-			const rconCommand = `adduser "${character.charName}" "${password}"`;
-			await handleSendCommand(rconCommand);
-			await axios.post(`/api/accept-character/${character.discordId}`, {
-				password: password,
-			});
-			alert('Character accepted successfully');
-			setSelectedCharacter(null);
-			const response = await axios.get('/api/character-queue');
-			setCharacterQueue(response.data);
+				const password = generateRandomPassword();
+				const rconCommand = `adduser "${character.charName}" "${password}"`;
+				await handleSendCommand(rconCommand);
+				const response = await fetch(`/api/accept-character/${character.discordId}`, {
+						method: 'POST',
+						headers: {
+								'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({ password }),
+				});
+				if (response.ok) {
+						alert('Character accepted successfully');
+						setSelectedCharacter(null);
+						const queueResponse = await fetch('/api/character-queue');
+						if (queueResponse.ok) {
+								const data = await queueResponse.json();
+								setCharacterQueue(data);
+						}
+				} else {
+						console.error('Error accepting character:', response.statusText);
+						alert('Failed to accept character');
+				}
 		} catch (error) {
-			console.error('Error accepting character:', error);
-			alert('Failed to accept character');
+				console.error('Error accepting character', error);
+				alert('Failed to accept character');
 		}
-	};
+};
 
-	const handleRejectCharacter = async (character: Character) => {
+const handleRejectCharacter = async (character: Character) => {
 		const rejectionMessage = prompt('Enter rejection message:');
 		if (!rejectionMessage) return;
 
 		try {
-			await axios.post(`/api/reject-character/${character.discordId}`, { rejectionMessage }, {
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			});
-			alert('Character rejected successfully!');
-			setSelectedCharacter(null);
-			const response = await axios.get('/api/character-queue');
-			setCharacterQueue(response.data);
+				const response = await fetch(`/api/reject-character/${character.discordId}`, {
+						method: 'POST',
+						headers: {
+								'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({ rejectionMessage }),
+				});
+				if (response.ok) {
+						alert('Character rejected successfully!');
+						setSelectedCharacter(null);
+						const queueResponse = await fetch('/api/character-queue');
+						if (queueResponse.ok) {
+								const data = await queueResponse.json();
+								setCharacterQueue(data);
+						}
+				} else {
+						console.error('Error rejecting character:', response.statusText);
+						alert('There was an error rejecting the character.');
+				}
 		} catch (error) {
-			console.error('Error rejecting character:', error);
-			alert('There was an error rejecting the character.');
+				console.error('Error rejecting character:', error);
+				alert('There was an error rejecting the character.');
 		}
-	};
+};
 
-	const handleDeleteCharacter = async (character: Character) => {
+const handleDeleteCharacter = async (character: Character) => {
 		try {
-			await axios.delete(`/api/character-queue/${character.charName}`);
-			alert('Character deleted successfully');
-			setSelectedCharacter(null);
-			const response = await axios.get('/api/character-queue');
-			setCharacterQueue(response.data);
+				const response = await fetch(`/api/character-queue/${character.charName}`, {
+						method: 'DELETE',
+				});
+				if (response.ok) {
+						alert('Character deleted successfully');
+						setSelectedCharacter(null);
+						const queueResponse = await fetch('/api/character-queue');
+						if (queueResponse.ok) {
+								const data = await queueResponse.json();
+								setCharacterQueue(data);
+						}
+				} else {
+						console.error('Error deleting character:', response.statusText);
+						alert('Failed to delete character');
+				}
 		} catch (error) {
-			console.error('Error deleting character:', error);
-			alert('Failed to delete character');
+				console.error('Error deleting character:', error);
+				alert('Failed to delete character');
 		}
-	};
+};
 
 	const getDashboardTitle = (user: User) => {
 		if (isAdmin(user)) return 'Admin Dashboard';

@@ -1,9 +1,17 @@
-import axios from 'axios';
-
 const encryptPassword = async (password: string): Promise<string> => {
   try {
-    const response = await axios.post('/api/encrypt-password', { password });
-    return response.data.encryptedPassword;
+    const response = await fetch('/api/encrypt-password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ password }),
+    });
+    if (!response.ok) {
+      throw new Error(`Error encrypting password: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data.encryptedPassword;
   } catch (error) {
     console.error('Error encrypting password:', error);
     throw error;
@@ -12,8 +20,18 @@ const encryptPassword = async (password: string): Promise<string> => {
 
 export const decryptPassword = async (encryptedPassword: string): Promise<string> => {
   try {
-    const response = await axios.post('/api/decrypt-password', { encryptedPassword });
-    return response.data.decryptedPassword;
+    const response = await fetch('/api/decrypt-password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ encryptedPassword }),
+    });
+    if (!response.ok) {
+      throw new Error(`Error decrypting password: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data.decryptedPassword;
   } catch (error) {
     console.error('Error decrypting password:', error);
     throw error;

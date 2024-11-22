@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
-import axios from 'axios';
+
 import Scrollbar from '../components/CustomScrollbar';
 import { Character } from '../models/Character';
 import { User } from '../models/User';
 
 interface RejectedCharacter {
-	charName: String,
-	discordId: String,
-	age: Number,
-	birthplace: String,
-	gender: String,
-	appearance: String,
-	personality: String,
-	backstory: String,
-	rejectionMessage: String,
+	charName: string,
+	discordId: string,
+	age: number,
+	birthplace: string,
+	gender: string,
+	appearance: string,
+	personality: string,
+	backstory: string,
+	rejectionMessage: string,
 }
 
 const getAvatarUrl = (charName: string): string => {
@@ -31,40 +31,53 @@ const UserDashboard: React.FC = () => {
 
 	useEffect(() => {
 		if (user) {
-			const url = `/api/characters/user/${user.discordId}`;
-			axios.get(url)
-				.then((response) => {
-					setCharacters(response.data);
-				})
-				.catch((error) => {
-					console.error('Error fetching characters:', error);
-					if (error.response && error.response.status === 404) {
-						setError('No characters found for this user.');
-					} else {
-						setError('An error occurred while fetching characters.');
-					}
-				});
-		}
-	}, [user]);
+				const fetchCharacters = async () => {
+						try {
+								const response = await fetch(`/api/characters/user/${user.discordId}`);
+								if (response.ok) {
+										const data = await response.json();
+										setCharacters(data);
+								} else {
+										console.error('Error fetching characters:', response.statusText);
+										if (response.status === 404) {
+												setError('No characters found for this user.');
+										} else {
+												setError('An error occurred while fetching characters.');
+										}
+								}
+						} catch (error) {
+								console.error('Error fetching characters', error);
+								setError('An error occurred while fetching characters.');
+						}
+				};
 
-	useEffect(() => {
+				fetchCharacters();
+		}
+}, [user]);
+
+useEffect(() => {
 		if (user) {
-			const fetchRejectedCharacters = async () => {
-				try {
-					const response = await axios.get(`/api/rejected-characters/${user?.discordId}`);
-					setRejectedCharacters(response.data);
-				} catch (error) {
-					console.error('Error fetching rejected characters:', error);
-				}
-			};
+				const fetchRejectedCharacters = async () => {
+						try {
+								const response = await fetch(`/api/rejected-characters/${user.discordId}`);
+								if (response.ok) {
+										const data = await response.json();
+										setRejectedCharacters(data);
+								} else {
+										console.error('Error fetching rejected characters:', response.statusText);
+								}
+						} catch (error) {
+								console.error('Error fetching rejected characters', error);
+						}
+				};
 
-			fetchRejectedCharacters();
+				fetchRejectedCharacters();
 		}
-	}, [user]);
+}, [user]);
 
-	const handleResubmitCharacter = (character: RejectedCharacter) => {
+const handleResubmitCharacter = (character: RejectedCharacter) => {
 		navigate('/resubmit-character', { state: { character } });
-	};
+};
 
 	if (!user) {
 		return <h1 className="text-gray-300">Please log in to view your dashboard.</h1>;

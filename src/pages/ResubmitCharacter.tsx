@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
 import useAuth from '../hooks/useAuth';
 import { Character } from '../models/Character';
 import AvatarEditor from 'react-avatar-editor';
@@ -47,7 +46,7 @@ const ResubmitCharacter: React.FC = () => {
 			.join(' ');
 	};
 
-	    // Fetch the avatar image when the component mounts
+   // Fetch the avatar image when the component mounts
 			useEffect(() => {
         const fetchAvatar = async () => {
             try {
@@ -124,57 +123,82 @@ const ResubmitCharacter: React.FC = () => {
 		const capitalizedCharName = capitalizeName(character.charName);
 
 		try {
-			// Check if character name already exists
-			await axios.get(`/api/characters/${capitalizedCharName}`);
-			setErrorMessage('Character name already exists. Please choose a different name.');
-			return;
-		} catch (error: any) {
-			if (error.response && error.response.status !== 404) {
+				// Check if character name already exists
+				const response = await fetch(`/api/characters/${capitalizedCharName}`);
+				if (response.ok) {
+						setErrorMessage('Character name already exists. Please choose a different name.');
+						return;
+				} else if (response.status !== 404) {
+						setErrorMessage('An error occurred while checking the character name.');
+						return;
+				}
+		} catch (error) {
+				console.error('Error checking character name', error);
 				setErrorMessage('An error occurred while checking the character name.');
 				return;
-			}
 		}
+
 		try {
-			const formData = new FormData();
-			if (croppedImage) {
-				const blob = await (await fetch(croppedImage)).blob();
-				formData.append('avatar', blob, 'avatar.webp');
-			}
-			formData.append('charName', capitalizedCharName);
+				const formData = new FormData();
+				if (croppedImage) {
+						const blob = await (await fetch(croppedImage)).blob();
+						formData.append('avatar', blob, 'avatar.webp');
+				}
+				formData.append('charName', capitalizedCharName);
 
-			await axios.post('/api/image/convert', formData, {
-				headers: {
-					'Content-Type': 'multipart/form-data',
-				},
-			});
+				const imageResponse = await fetch('/api/image/convert', {
+						method: 'POST',
+						body: formData,
+						headers: {
+								'Accept': 'application/json',
+						},
+				});
 
-			const payload = {
-				...character,
-				charName: capitalizedCharName,
-				discordId: user?.discordId,
-				rejectionMessage: character.rejectionMessage,
-			};
+				if (!imageResponse.ok) {
+						setErrorMessage('An error occurred while converting the image.');
+						return;
+				}
 
-			await axios.post('/api/character-queue', payload, {
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			});
+				const payload = {
+						...character,
+						charName: capitalizedCharName,
+						discordId: user?.discordId,
+						rejectionMessage: character.rejectionMessage,
+				};
 
-			// Delete character from rejectedCharacter database
-			await axios.delete(`/api/rejected-characters/${capitalizedCharName}`);
+				const characterResponse = await fetch('/api/character-queue', {
+						method: 'POST',
+						headers: {
+								'Content-Type': 'application/json',
+						},
+						body: JSON.stringify(payload),
+				});
 
-			alert('Character creation successful, sent to queue for admin approval!');
-			window.location.href = '/dashboard';
-		} catch (error: any) {
-			if (error.response && error.response.status === 409) {
-				setErrorMessage('Character name already exists. Please choose a different name.');
-			} else {
+				if (!characterResponse.ok) {
+						if (characterResponse.status === 409) {
+								setErrorMessage('Character name already exists. Please choose a different name.');
+						} else {
+								setErrorMessage('There was an error creating the character.');
+						}
+						return;
+				}
+
+				// Delete character from rejectedCharacter database
+				const deleteResponse = await fetch(`/api/rejected-characters/${capitalizedCharName}`, {
+						method: 'DELETE',
+				});
+
+				if (!deleteResponse.ok) {
+						console.error('Error deleting rejected character:', deleteResponse.statusText);
+				}
+
+				alert('Character creation successful, sent to queue for admin approval!');
+				window.location.href = '/dashboard';
+		} catch (error) {
 				console.error('Error creating character', error);
 				setErrorMessage('There was an error creating the character.');
-			}
 		}
-	};
+		};
 
 	return (
 		<Scrollbar>

@@ -2,12 +2,11 @@ import { Router, Request, Response, NextFunction } from 'express';
 import passport from 'passport';
 import { Strategy as DiscordStrategy } from 'passport-discord';
 import dotenv from 'dotenv';
-import axios from 'axios';
-import axiosRetry from 'axios-retry';
 import User from '../models/User';
 
 dotenv.config();
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 passport.serializeUser((user: any, done) => {
   done(null, user.discordId);
 });
@@ -32,7 +31,6 @@ passport.use(new DiscordStrategy(
     const { id, username, discriminator, avatar } = profile;
     try {
       let user = await User.findOne({ discordId: id });
-
       if (user) {
         user.username = `${username}#${discriminator}`;
         user.avatar = avatar ?? '';
@@ -49,35 +47,52 @@ passport.use(new DiscordStrategy(
 
       // Check if the user is a member of the server
       const guildId = process.env.DISCORD_GUILD_ID!;
-      const response = await axios.get(`https://discord.com/api/v9/users/@me/guilds`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      });
+      let isMember = false;
+      let retryCount = 0;
+      const maxRetries = 5;
 
-      const isMember = response.data.some((guild: any) => guild.id === guildId);
+      const fetchGuilds = async () => {
+        const response = await fetch(`https://discord.com/api/v9/users/@me/guilds`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
+        const data = await response.json();
+
+        // Check for rate limiting
+        if (data.message === 'You are being rate limited.') {
+          const retryAfter = data.retry_after * 1000; // Convert to milliseconds
+          console.log(`Rate limited. Retrying after ${retryAfter} ms`);
+          if (retryCount < maxRetries) {
+            retryCount++;
+            await new Promise(resolve => setTimeout(resolve, retryAfter));
+            return fetchGuilds(); // Retry the request
+          } else {
+            console.error('Max retries reached. Could not fetch guilds.');
+            return;
+          }
+        }
+
+        // Ensure data is an array before calling some
+        if (Array.isArray(data)) {
+          // Check if the user is a member of the specified guild
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          isMember = data.some((guild: any) => guild.id === guildId);
+        } else {
+          console.error('Expected an array but got:', data);
+        }
+      };
+
+      await fetchGuilds();
 
       user.isMember = isMember;
       await user.save();
-
       return done(null, user);
     } catch (err) {
       return done(err);
     }
   }
 ));
-
-// Configure axios to use axios-retry
-axiosRetry(axios, {
-  retries: 3, // Number of retries
-  retryDelay: (retryCount) => {
-    return axiosRetry.exponentialDelay(retryCount);
-  },
-  retryCondition: (error) => {
-    // Retry only if the error status is 429 (rate limit)
-    return error.response?.status === 429;
-  },
-});
 
 const router = Router();
 

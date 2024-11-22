@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import useAuth from '../hooks/useAuth';
+import useAuth from  '../hooks/useAuth';
 import { Character } from '../models/Character';
 import AvatarEditor from 'react-avatar-editor';
 import Scrollbar from '../components/CustomScrollbar';
@@ -59,8 +58,8 @@ const CreateCharacter: React.FC = () => {
 		}
 	};
 
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
+	const handleSubmit = async (event: React.FormEvent) => {
+		event.preventDefault();
 
 		const missingFields = [];
 		if (!character.charName) missingFields.push('Character name');
@@ -95,18 +94,21 @@ const CreateCharacter: React.FC = () => {
 
     try {
 			// Check if character name already exists
-			await axios.get(`/api/characters/${capitalizedCharName}`);
-			setErrorMessage('Character name already exists. Please choose a different name.');
-			return;
-	} catch (error: any) {
-			if (error.response && error.response.status === 404) {
-					// Suppress 404 error logging
-					console.log('Character name not found, proceeding with creation.');
+			const response = await fetch(`/api/characters/${capitalizedCharName}`);
+			if (response.ok) {
+				setErrorMessage('Character name already exists. Please choose a different name.');
+				return;
+			} else if (response.status === 404) {
+				// Character does not exist, proceed
+				console.log('Character name not found, proceeding with creation.');
 			} else {
-					setErrorMessage('An error occurred while checking the character name.');
-					return;
+				setErrorMessage('An error occurred while checking the character name.');
+				return;
 			}
-	}
+		} catch (error) {
+			setErrorMessage('An error occurred while checking the character name.');
+			return;
+		}
 
 		try {
 			const formData = new FormData();
@@ -116,11 +118,15 @@ const CreateCharacter: React.FC = () => {
 			}
 			formData.append('charName', capitalizedCharName);
 
-			await axios.post('/api/image/convert', formData, {
-				headers: {
-					'Content-Type': 'multipart/form-data',
-				},
+			const imageResponse = await fetch('/api/image/convert', {
+				method: 'POST',
+				body: formData,
 			});
+
+			if (!imageResponse.ok) {
+				setErrorMessage('An error occurred while uploading the image.');
+				return;
+			}
 
 			const payload = {
 				...character,
@@ -128,21 +134,29 @@ const CreateCharacter: React.FC = () => {
 				discordId: user?.discordId,
 			};
 
-			await axios.post('/api/character-queue', payload, {
+			const characterResponse = await fetch('/api/character-queue', {
+				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 				},
+				body: JSON.stringify(payload),
 			});
+
+			if (!characterResponse.ok) {
+				if (characterResponse.status === 409) {
+					setErrorMessage('Character name already exists. Please choose a different name.');
+				} else {
+					setErrorMessage('There was an error creating the character.');
+				}
+				return;
+			}
 
 			alert('Character creation successful, sent to queue for admin approval!');
 			window.location.href = '/dashboard';
-		} catch (error: any) {
-			if (error.response && error.response.status === 409) {
-				setErrorMessage('Character name already exists. Please choose a different name.');
-			} else {
-				console.error('Error creating character', error);
-				setErrorMessage('There was an error creating the character.');
-			}
+		} catch (error) {
+			console.error('Error creating character', error);
+			setErrorMessage('There was an error creating the character.');
+			return;
 		}
 	};
 

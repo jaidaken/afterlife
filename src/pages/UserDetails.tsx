@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
 import { User } from '../models/User';
 import { Character } from '../models/Character';
 import UserAvatar from '../components/UserAvatar';
@@ -11,28 +10,38 @@ const UserDetail: React.FC = () => {
 	const [characters, setCharacters] = useState<Character[]>([]);
 
 	useEffect(() => {
-		const fetchUser = async () => {
-			try {
-				const response = await axios.get(`/api/users/${discordId}`);
-				setUser(response.data);
-			} catch (error) {
-				console.error('Error fetching user', error);
-			}
-		};
+    const fetchUser = async () => {
+        try {
+            const response = await fetch(`/api/users/${discordId}`);
+            if (response.ok) {
+                const data = await response.json();
+                setUser(data);
+            } else {
+                console.error('Error fetching user:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error fetching user', error);
+        }
+    };
 
-		const fetchCharacters = async () => {
-			try {
-				const response = await axios.get(`/api/characters/user/${discordId}`);
-				setCharacters(response.data);
-			} catch (error) {
-				console.error('Error fetching characters', error);
-			}
-		};
+    const fetchCharacters = async () => {
+        try {
+            const response = await fetch(`/api/characters/user/${discordId}`);
+            if (response.ok) {
+                const data = await response.json();
+                setCharacters(data);
+            } else {
+                console.error('Error fetching characters:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error fetching characters', error);
+        }
+    };
 
-		fetchUser();
-		fetchCharacters();
+    fetchUser();
+    fetchCharacters();
 	}, [discordId]);
-
+	
 	if (!user) {
 		return <h1 className="text-gray-300">Loading...</h1>;
 	}

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UserAvatar from '../components/UserAvatar';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
 import { User } from '../models/User';
 import Scrollbar from '../components/CustomScrollbar';
 
@@ -12,16 +11,21 @@ const Users: React.FC = () => {
 	const [users, setUsers] = useState<User[]>([]);
 
 	useEffect(() => {
-		const fetchUsers = async () => {
-			try {
-				const response = await axios.get('/api/users');
-				setUsers(response.data);
-			} catch (error) {
-				console.error('Error fetching users', error);
-			}
-		};
-		fetchUsers();
-	}, []);
+    const fetchUsers = async () => {
+        try {
+            const response = await fetch('/api/users');
+            if (response.ok) {
+                const data = await response.json();
+                setUsers(data);
+            } else {
+                console.error('Error fetching users:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error fetching users', error);
+        }
+    };
+    fetchUsers();
+}, []);
 
 	if (!user || (user.role !== 'applicationTeam' && user.role !== 'admin' && user.role !== 'moderator')) {
 		return <h1 className="text-gray-300">Access Denied</h1>;
