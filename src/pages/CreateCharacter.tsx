@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import useAuth from  '../hooks/useAuth';
+import useAuth from '../hooks/useAuth';
 import { Character } from '../models/Character';
 import AvatarEditor from 'react-avatar-editor';
 import Scrollbar from '../components/CustomScrollbar';
@@ -164,7 +164,7 @@ const CreateCharacter: React.FC = () => {
 	return (
 		<Scrollbar>
 			<div className="flex justify-center mt-6 pb-10">
-				<div className="container mx-auto p-4 bg-gray-900 -lg shadow-lg w-full h-full md:w-3/4 lg:w-1/2">
+				<div className="container mx-auto p-4 bg-gray-900 shadow-lg w-full h-full sm:w-3/4 lg:w-1/2 min-w-[90%] sm:min-w-[500px] flex-grow">
 					<h1 className="text-2xl mb-4">Create Character</h1>
 					<form onSubmit={handleSubmit}>
 
