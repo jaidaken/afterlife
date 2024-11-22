@@ -55,32 +55,54 @@ const UserCharacterDetails: React.FC = () => {
 	};
 
 
-  const handleDeleteCharacter = async (character: Character) => {
-    if (confirmationName !== character.charName) {
-      alert('Character name does not match.');
-      return;
-    }
+	const handleDeleteCharacter = async (character: Character) => {
+		if (confirmationName !== character.charName) {
+			alert('Character name does not match.');
+			return;
+		}
 
-    try {
-      const response = await fetch(`/api/characters/${character.charName}`, {
-        method: 'DELETE',
-      });
+		try {
+			// Create the graveyard entry without the _id field
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const { _id, ...characterData } = character;
+			const graveyardEntry = {
+				...characterData,
+				DeathDate: new Date(),
+				isRevived: false,
+			};
 
-      if (response.ok) {
-        alert('Character deleted successfully.');
-        navigate('/dashboard');
-        window.location.reload();
-      } else {
-        console.error('Error deleting character:', response.statusText);
-        alert('Failed to delete character.');
-      }
-    } catch (error) {
-      console.error('Error deleting character:', error);
-      alert('Failed to delete character.');
-    }
-  };
+			const graveyardResponse = await fetch('/api/graveyard', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(graveyardEntry),
+			});
 
+			if (!graveyardResponse.ok) {
+				console.error('Error creating graveyard entry:', graveyardResponse.statusText);
+				alert('Failed to create graveyard entry.');
+				return;
+			}
 
+			// Delete the character
+			const deleteResponse = await fetch(`/api/characters/${character.charName}`, {
+				method: 'DELETE',
+			});
+
+			if (deleteResponse.ok) {
+				alert('Character deleted successfully.');
+				navigate('/dashboard');
+				window.location.reload();
+			} else {
+				console.error('Error deleting character:', deleteResponse.statusText);
+				alert('Failed to delete character.');
+			}
+		} catch (error) {
+			console.error('Error deleting character:', error);
+			alert('Failed to delete character.');
+		}
+	};
 
 	if (!character) {
 		return <div>Loading...</div>;

@@ -5,6 +5,7 @@ import CharacterQueue from '../models/CharacterQueue';
 import { encryptPassword } from '../utils/passwordUtils';
 import { isAdmin, isApplicationTeam } from '../middleware/authMiddleware';
 import RejectedCharacter from '../models/RejectedCharacter';
+import Graveyard from '../models/Graveyard';
 
 const router = express.Router();
 
@@ -78,7 +79,14 @@ router.post('/characters', isApplicationTeam, async (req, res) => {
 
   if (!charName) {
     return res.status(400).json({ message: 'Character name is required' });
-  }
+	}
+
+	const existingCharacter = await Character.findOne({ charName });
+  const graveyardCharacter = await Graveyard.findOne({ charName });
+
+  if (existingCharacter || graveyardCharacter) {
+    return res.status(409).json({ message: 'Character already exists' });
+	}
 
   try {
     const newCharacter = new Character({
@@ -254,11 +262,37 @@ router.delete('/rejected-characters/:charName', async (req, res) => {
 router.delete('/characters/:charName', async (req, res) => {
   try {
     const { charName } = req.params;
-    const deletedCharacter = await Character.findOneAndDelete({ charName });
+    const character = await Character.findOne({ charName });
 
-    if (!deletedCharacter) {
+    if (!character) {
       return res.status(404).send('Character not found');
     }
+
+    const characterData = character.toObject();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    delete (characterData as any)._id; // Remove the _id field
+
+    const existingGraveyardEntry = await Graveyard.findOne({ charName });
+
+    if (existingGraveyardEntry) {
+      // Update the existing graveyard entry
+      await Graveyard.updateOne(
+        { charName },
+        {
+          ...characterData,
+          DeathDate: new Date(),
+        }
+      );
+    } else {
+      // Create a new graveyard entry
+      const graveyardEntry = new Graveyard({
+        ...characterData,
+        DeathDate: new Date(),
+      });
+      await graveyardEntry.save();
+    }
+
+    await Character.deleteOne({ charName });
 
     res.status(204).send();
   } catch (error) {
@@ -266,5 +300,6 @@ router.delete('/characters/:charName', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
 
 export default router;

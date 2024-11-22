@@ -113,7 +113,7 @@ const UserDashboard: React.FC = () => {
 						)}
 					</div>
 					<div className="my-8">
-						<Link to="create-character" className="bg-blue-500 text-white py-2 px-4 rounded">
+						<Link to="/create-character" className="bg-blue-500 text-white py-2 px-4 rounded">
 							Create New Character
 						</Link>
 					</div>
