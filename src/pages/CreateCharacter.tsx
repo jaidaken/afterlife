@@ -92,7 +92,7 @@ const CreateCharacter: React.FC = () => {
 
 		const capitalizedCharName = capitalizeName(character.charName);
 
-    try {
+		try {
 			// Check if character name already exists
 			const response = await fetch(`/api/characters/${capitalizedCharName}`);
 			if (response.ok) {
@@ -124,7 +124,9 @@ const CreateCharacter: React.FC = () => {
 			});
 
 			if (!imageResponse.ok) {
-				setErrorMessage('An error occurred while uploading the image.');
+				const errorText = await imageResponse.text();
+				console.error('Error converting image:', errorText);
+				setErrorMessage('An error occurred while converting the image.');
 				return;
 			}
 
@@ -156,7 +158,6 @@ const CreateCharacter: React.FC = () => {
 		} catch (error) {
 			console.error('Error creating character', error);
 			setErrorMessage('There was an error creating the character.');
-			return;
 		}
 	};
 

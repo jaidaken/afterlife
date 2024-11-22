@@ -21,5 +21,6 @@ backend/dist/
 # Local Netlify folder
 .netlify
 /public/avatars
+/public/temp
 backend/ssl/
 /ssl/

@@ -1,10 +1,9 @@
 import express from 'express';
 import { getAllCharacters } from '../utils/csvReader';
 import Character from '../models/Character';
-import User from '../models/User';
 import CharacterQueue from '../models/CharacterQueue';
 import { encryptPassword } from '../utils/passwordUtils';
-import { isAdmin, isModerator, isApplicationTeam } from '../middleware/authMiddleware';
+import { isAdmin, isApplicationTeam } from '../middleware/authMiddleware';
 import RejectedCharacter from '../models/RejectedCharacter';
 
 const router = express.Router();

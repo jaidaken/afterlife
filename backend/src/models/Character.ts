@@ -1,8 +1,7 @@
-import mongoose, { Document, Model, Schema } from 'mongoose'
-import { ObjectId } from 'mongodb'
+import mongoose, { Model, Schema } from 'mongoose';
+import { ObjectId } from 'mongodb';
 
-
-export interface ICharacter extends Document {
+export interface ICharacter {
 	_id?: ObjectId;
 	charName: string;
 	password: string;
@@ -76,7 +75,7 @@ export interface ICharacter extends Document {
   Sneaking: number;
 }
 
-const CharacterSchema = new Schema<ICharacter>({
+const CharacterSchema: Schema<ICharacter> = new Schema({
 	charName: { type: String, required: true, unique: true },
 	password: { type: String, required: false },
 	age: { type: Number, required: false },
@@ -147,10 +146,8 @@ const CharacterSchema = new Schema<ICharacter>({
   Lightfooted: { type: Number, required: false },
   Nimble: { type: Number, required: false },
   Sneaking: { type: Number, required: false },
-})
+});
 
+const Character: Model<ICharacter> = mongoose.model('Character', CharacterSchema);
 
-const Character: Model<ICharacter> = mongoose.model('Character', CharacterSchema)
-
-
-export default Character
+export default Character;
