@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import { Character } from '../models/Character';
 import AvatarEditor from 'react-avatar-editor';
 import Scrollbar from '../components/CustomScrollbar';
 
 const CreateCharacter: React.FC = () => {
+
 	const { user } = useAuth();
+	const navigate = useNavigate();
+	
 	const [character, setCharacter] = useState<Character>({
 		charName: '',
 		discordId: '',
@@ -25,6 +29,12 @@ const CreateCharacter: React.FC = () => {
 	const [croppedImage, setCroppedImage] = useState<string | null>(null);
 	const [showCropper, setShowCropper] = useState<boolean>(false);
 	const [errorMessage, setErrorMessage] = useState('');
+
+	useEffect(() => {
+    if (!user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
 	const editorRef = React.useRef<AvatarEditor>(null);
 

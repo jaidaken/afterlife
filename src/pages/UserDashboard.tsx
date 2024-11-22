@@ -31,53 +31,53 @@ const UserDashboard: React.FC = () => {
 
 	useEffect(() => {
 		if (user) {
-				const fetchCharacters = async () => {
-						try {
-								const response = await fetch(`/api/characters/user/${user.discordId}`);
-								if (response.ok) {
-										const data = await response.json();
-										setCharacters(data);
-								} else {
-										console.error('Error fetching characters:', response.statusText);
-										if (response.status === 404) {
-												setError('No characters found for this user.');
-										} else {
-												setError('An error occurred while fetching characters.');
-										}
-								}
-						} catch (error) {
-								console.error('Error fetching characters', error);
-								setError('An error occurred while fetching characters.');
+			const fetchCharacters = async () => {
+				try {
+					const response = await fetch(`/api/characters/user/${user.discordId}`);
+					if (response.ok) {
+						const data = await response.json();
+						setCharacters(data);
+					} else {
+						console.error('Error fetching characters:', response.statusText);
+						if (response.status === 404) {
+							setError('No characters found for this user.');
+						} else {
+							setError('An error occurred while fetching characters.');
 						}
-				};
+					}
+				} catch (error) {
+					console.error('Error fetching characters', error);
+					setError('An error occurred while fetching characters.');
+				}
+			};
 
-				fetchCharacters();
+			fetchCharacters();
 		}
-}, [user]);
+	}, [user]);
 
-useEffect(() => {
+	useEffect(() => {
 		if (user) {
-				const fetchRejectedCharacters = async () => {
-						try {
-								const response = await fetch(`/api/rejected-characters/${user.discordId}`);
-								if (response.ok) {
-										const data = await response.json();
-										setRejectedCharacters(data);
-								} else {
-										console.error('Error fetching rejected characters:', response.statusText);
-								}
-						} catch (error) {
-								console.error('Error fetching rejected characters', error);
-						}
-				};
+			const fetchRejectedCharacters = async () => {
+				try {
+					const response = await fetch(`/api/rejected-characters/${user.discordId}`);
+					if (response.ok) {
+						const data = await response.json();
+						setRejectedCharacters(data);
+					} else {
+						console.error('Error fetching rejected characters:', response.statusText);
+					}
+				} catch (error) {
+					console.error('Error fetching rejected characters', error);
+				}
+			};
 
-				fetchRejectedCharacters();
+			fetchRejectedCharacters();
 		}
-}, [user]);
+	}, [user]);
 
-const handleResubmitCharacter = (character: RejectedCharacter) => {
+	const handleResubmitCharacter = (character: RejectedCharacter) => {
 		navigate('/resubmit-character', { state: { character } });
-};
+	};
 
 	if (!user) {
 		return <h1 className="text-gray-300">Please log in to view your dashboard.</h1>;
@@ -113,13 +113,12 @@ const handleResubmitCharacter = (character: RejectedCharacter) => {
 						)}
 					</div>
 					<div className="my-8">
-						<Link to="/create-character" className="bg-blue-500 text-white py-2 px-4 rounded">
+						<Link to="create-character" className="bg-blue-500 text-white py-2 px-4 rounded">
 							Create New Character
 						</Link>
 					</div>
-
 					<div className="w-auto mx-auto">
-					<h2 className="text-2xl mb-4 text-white flex justify-center">Rejected Characters</h2>
+						<h2 className="text-2xl mb-4 text-white flex justify-center">Rejected Characters</h2>
 						<ul>
 							{rejectedCharacters.map((character) => (
 								<li key={String(character.discordId)} className="mb-4 p-4 bg-gray-800 rounded-lg shadow-lg">
