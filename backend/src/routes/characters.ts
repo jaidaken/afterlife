@@ -251,4 +251,20 @@ router.delete('/rejected-characters/:charName', async (req, res) => {
   }
 });
 
+router.delete('/characters/:charName', async (req, res) => {
+  try {
+    const { charName } = req.params;
+    const deletedCharacter = await Character.findOneAndDelete({ charName });
+
+    if (!deletedCharacter) {
+      return res.status(404).send('Character not found');
+    }
+
+    res.status(204).send();
+  } catch (error) {
+    console.error('Error deleting character:', error);
+    res.status(500).send('Server error');
+  }
+});
+
 export default router;

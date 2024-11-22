@@ -43,7 +43,7 @@ const PublicCharacterDetails: React.FC = () => {
 	return (
 		<Scrollbar>
 			<div className="p-4 flex items-center flex-col mt-10">
-				<div className="bg-gray-800 p-6 rounded-lg text-center shadow-lg">
+				<div className="public-character bg-gray-800 p-6 rounded-lg text-center shadow-lg">
 					<h1 className="text-3xl font-bold mb-4">{character.charName}</h1>
 					{username && <p className="text-xl text-gray-400 mb-4">User: {username}</p>} {/* Display the username */}
 					<img

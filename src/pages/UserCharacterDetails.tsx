@@ -18,28 +18,31 @@ const UserCharacterDetails: React.FC = () => {
 	const [decryptedPassword, setDecryptedPassword] = useState<string | null>(null);
 	const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
+	const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
+	const [confirmationName, setConfirmationName] = useState<string>('');
+
 	useEffect(() => {
 		const fetchData = async () => {
-				try {
-						const response = await fetch(`/api/characters/${name}`);
-						if (response.ok) {
-								const data = await response.json();
-								setCharacter(data);
+			try {
+				const response = await fetch(`/api/characters/${name}`);
+				if (response.ok) {
+					const data = await response.json();
+					setCharacter(data);
 
-								// Fetch and decrypt the password
-								const encryptedPassword = data.password;
-								const decrypted = await decryptPassword(encryptedPassword);
-								setDecryptedPassword(decrypted);
-						} else {
-								console.error('Error fetching character data:', response.statusText);
-						}
-				} catch (error) {
-						console.error('Error fetching character data', error);
+					// Fetch and decrypt the password
+					const encryptedPassword = data.password;
+					const decrypted = await decryptPassword(encryptedPassword);
+					setDecryptedPassword(decrypted);
+				} else {
+					console.error('Error fetching character data:', response.statusText);
 				}
+			} catch (error) {
+				console.error('Error fetching character data', error);
+			}
 		};
 
 		fetchData();
-}, [name]);
+	}, [name]);
 
 	const handleEdit = () => {
 		navigate(`/character/edit/${character?.charName}`);
@@ -51,14 +54,42 @@ const UserCharacterDetails: React.FC = () => {
 		}
 	};
 
+
+  const handleDeleteCharacter = async (character: Character) => {
+    if (confirmationName !== character.charName) {
+      alert('Character name does not match.');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/characters/${character.charName}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        alert('Character deleted successfully.');
+        navigate('/dashboard');
+        window.location.reload();
+      } else {
+        console.error('Error deleting character:', response.statusText);
+        alert('Failed to delete character.');
+      }
+    } catch (error) {
+      console.error('Error deleting character:', error);
+      alert('Failed to delete character.');
+    }
+  };
+
+
+
 	if (!character) {
-		return <div></div>;
+		return <div>Loading...</div>;
 	}
 
 	return (
 		<Scrollbar>
 			<div className="p-4 flex items-center flex-col mt-10">
-				<div className="bg-gray-800 p-6 rounded-lg text-center shadow-lg">
+				<div className="user-character bg-gray-800 p-6 rounded-lg text-center shadow-lg">
 					<h1 className="text-3xl font-bold mb-4">{character.charName}</h1>
 					<img
 						src={getAvatarUrl(character.charName)}
@@ -126,6 +157,14 @@ const UserCharacterDetails: React.FC = () => {
 								</tr>
 							</tbody>
 						</table>
+						<div className="delete-button flex justify-end mt-4">
+							<button
+								onClick={() => setSelectedCharacter(character)}
+								className="bg-red-500 text-white py-2 px-4 rounded"
+							>
+								Delete Character
+							</button>
+						</div>
 					</div>
 				</div>
 				{character.charName === user?.discordId && (
@@ -137,6 +176,35 @@ const UserCharacterDetails: React.FC = () => {
 					</button>
 				)}
 			</div>
+			{selectedCharacter && (
+				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+					<div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+						<h2 className="text-2xl mb-4 text-center text-red-700 font-bold">Are you sure?</h2>
+						<p className='text-center'>This CANNOT be undone, <br />your character will be deleted, <br /><span style={{ color: 'red' }}>PERMANENTLY</span><br />and considered deceased.</p>
+						<p className='p-3 text-center'>Type the full name of the character to confirm (Case Sensitive):</p>
+						<input
+							type="text"
+							value={confirmationName}
+							onChange={(e) => setConfirmationName(e.target.value)}
+							className="w-full p-2 mb-4 bg-gray-700 text-white rounded"
+						/>
+						<div className="flex justify-end">
+							<button
+								onClick={() => handleDeleteCharacter(selectedCharacter)}
+								className="bg-red-500 text-white py-2 px-4 rounded mr-2"
+							>
+								Confirm
+							</button>
+							<button
+								onClick={() => setSelectedCharacter(null)}
+								className="bg-gray-500 text-white py-2 px-4 rounded"
+							>
+								Cancel
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
 		</Scrollbar>
 	);
 };
