@@ -274,24 +274,24 @@ const AdminDashboard: React.FC = () => {
 				</div>
 
 				{(isAdmin(user) || isModerator(user) || isApplicationTeam(user)) && (
-						<div className='flex flex-col gap-4 mt-4'>
-							<button
-								onClick={handleOpenCharacterQueueModal}
-								className="bg-blue-700 text-white py-2 px-4 rounded w-72"
-							>
-								Character Queue
-								<span className={characterQueue.length !== 0 ? 'text-red-500 font-bold' : ''}>
-									{' '}({characterQueue.length})
-								</span>
-							</button>
+					<div className='flex flex-col gap-4 mt-4'>
+						<button
+							onClick={handleOpenCharacterQueueModal}
+							className="bg-blue-700 text-white py-2 px-4 rounded w-72"
+						>
+							Character Queue
+							<span className={characterQueue.length !== 0 ? 'text-red-500 font-bold' : ''}>
+								{' '}({characterQueue.length})
+							</span>
+						</button>
 
-							<button
-								onClick={handleOpenGraveyardModal}
-								className="bg-red-500 text-white py-2 px-4 rounded w-72"
-							>
-								Graveyard
-							</button>
-						</div>
+						<button
+							onClick={handleOpenGraveyardModal}
+							className="bg-red-500 text-white py-2 px-4 rounded w-72"
+						>
+							Graveyard
+						</button>
+					</div>
 				)}
 
 
@@ -385,7 +385,10 @@ const AdminDashboard: React.FC = () => {
 														<p className="text-center"><strong>Username:</strong> {getUsernameByDiscordId(character.discordId)}</p>
 													</div>
 													<button
-														onClick={() => handleOpenModal(character)}
+														onClick={() => {
+															handleOpenModal(character);
+															handleCloseCharacterQueueModal();
+														}}
 														className="bg-blue-500 text-white py-2 px-4 rounded"
 													>
 														View Details
