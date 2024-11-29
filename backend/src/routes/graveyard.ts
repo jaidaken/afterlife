@@ -40,5 +40,4 @@ router.get('/graveyard/:charName', async (req, res) => {
   }
 });
 
-
 export default router;

@@ -268,7 +268,8 @@ router.delete('/characters/:charName', async (req, res) => {
       return res.status(404).send('Character not found');
     }
 
-    const characterData = character.toObject();
+		const characterData = character.toObject();
+		characterData.isAlive = false;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     delete (characterData as any)._id; // Remove the _id field
 
@@ -301,5 +302,32 @@ router.delete('/characters/:charName', async (req, res) => {
   }
 });
 
+router.post('/restore-character/:charName', isAdmin, async (req, res) => {
+  try {
+    const { charName } = req.params;
+    const graveyardEntry = await Graveyard.findOne({ charName });
+
+    if (!graveyardEntry) {
+      return res.status(404).send('Character not found in graveyard');
+    }
+
+    const characterData = graveyardEntry.toObject();
+		characterData.isAlive = true;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		delete (characterData as any)._id; // Remove the _id field
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		delete (characterData as any).DeathDate; // Remove the _id field
+
+    const newCharacter = new Character(characterData);
+    await newCharacter.save();
+
+    await Graveyard.deleteOne({ charName });
+
+    res.status(201).json(newCharacter);
+  } catch (error) {
+    console.error('Error restoring character:', error);
+    res.status(500).send('Server error');
+  }
+});
 
 export default router;
