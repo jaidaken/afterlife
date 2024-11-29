@@ -279,7 +279,7 @@ const AdminDashboard: React.FC = () => {
 								onClick={handleOpenCharacterQueueModal}
 								className="bg-blue-700 text-white py-2 px-4 rounded w-72"
 							>
-								Show Character Queue
+								Character Queue
 								<span className={characterQueue.length !== 0 ? 'text-red-500 font-bold' : ''}>
 									{' '}({characterQueue.length})
 								</span>
@@ -289,7 +289,7 @@ const AdminDashboard: React.FC = () => {
 								onClick={handleOpenGraveyardModal}
 								className="bg-red-500 text-white py-2 px-4 rounded w-72"
 							>
-								Show Graveyard Characters
+								Graveyard
 							</button>
 						</div>
 				)}
